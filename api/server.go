@@ -17,11 +17,11 @@ func startServer(url string) {
 	// Add MCP-level logging middleware.
 	server.AddReceivingMiddleware(createLoggingMiddleware())
 
-	// Add the cityTime tool.
+	// Add the tools
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "cityTime",
-		Description: "Get the current time in NYC, San Francisco, or Boston",
-	}, getTime)
+		Name:        "get_version",
+		Description: "Get the Kubernetes API server version details",
+	}, getVersion)
 
 	// Create the streamable HTTP handler.
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
