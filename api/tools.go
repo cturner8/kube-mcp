@@ -10,8 +10,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// getVersion implements the tool that returns the Kubernetes API server version details
-func getVersion(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+// getServerVersion implements the tool that returns the Kubernetes API server version details
+func getServerVersion(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	version, err := kubernetesApiClient.Discovery().ServerVersion()
 	if err != nil {
 		return nil, nil, err
