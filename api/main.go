@@ -34,6 +34,7 @@ func main() {
 
 	// Construct the server URL.
 	url := fmt.Sprintf("%s:%d", *host, *port)
+	baseUrl := fmt.Sprintf("http://%s", url) // TODO: Fix protocol
 	// Start the MCP server.
-	startServer(url)
+	startServer(url, baseUrl)
 }
