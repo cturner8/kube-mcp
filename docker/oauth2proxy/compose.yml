@@ -1,0 +1,40 @@
+name: "oauth2-proxy"
+
+services:
+  server:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0-alpine
+    restart: unless-stopped
+    command: [
+       "--config", 
+       "/etc/oauth2-proxy/oauth2-proxy.cfg"
+    ]
+    ports:
+      - 4180:4180
+    networks:
+      - internal
+    secrets:
+      - cookie_secret
+      - client_secret
+    configs:
+      - source: proxy_config
+        target: /etc/oauth2-proxy/oauth2-proxy.cfg
+      - source: authenticated_emails
+        target: /etc/oauth2-proxy/authenticated-emails.txt
+
+volumes:
+  proxy_data: {}
+
+networks:
+  internal: {}
+
+secrets:
+  cookie_secret:
+    file: ./secrets/cookie-secret.txt
+  client_secret:
+    file: ./secrets/client-secret.txt
+
+configs:
+  proxy_config:
+    file: ./oauth2-proxy.toml
+  authenticated_emails:
+    file: ./secrets/authenticated-emails.txt
