@@ -1,15 +1,17 @@
 name: "oauth2-proxy"
 
 services:
-  server:
+  auth:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0-alpine
     restart: unless-stopped
     command: [
        "--config", 
        "/etc/oauth2-proxy/oauth2-proxy.cfg"
     ]
-    ports:
-      - 4180:4180
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=Host(`auth.localhost`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=4180"
     networks:
       - internal
     secrets:
@@ -21,8 +23,38 @@ services:
       - source: authenticated_emails
         target: /etc/oauth2-proxy/authenticated-emails.txt
 
+  proxy:
+    image: ghcr.io/traefik/traefik:v3.6.1
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`dashboard.localhost`)"
+    command: [
+      --providers.docker=true,
+      --providers.docker.exposedByDefault=false,
+      --entrypoints.web.address=:8000,
+      --entrypoints.web.http.redirections.entryPoint.to=websecure,
+      --entrypoints.web.http.redirections.entryPoint.scheme=https,
+      --entrypoints.web.http.redirections.entryPoint.permanent=true,
+      --entrypoints.websecure.address=:8443,
+      --entryPoints.websecure.http.tls=true,
+      --entryPoints.websecure.asDefault=true,
+    ]
+    ports:
+      - 8000:8000
+      - 8080:8080
+      - 8443:8443
+    use_api_socket: true
+    networks:
+      - internal
+    volumes:
+      - acme_data:/etc/traefik/acme
+
 volumes:
-  proxy_data: {}
+  auth_data: {}
+  acme_data: {}
 
 networks:
   internal: {}
