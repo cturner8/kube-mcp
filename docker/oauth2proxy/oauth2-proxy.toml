@@ -6,11 +6,11 @@ http_address = ":4180"
 # https_address = ":443"
 
 ## Are we running behind a reverse proxy? Will not accept headers like X-Real-Ip unless this is set.
-# reverse_proxy = true
+reverse_proxy = true
 
 ## the OAuth Redirect URL.
 # defaults to the "https://" + requested host header + "/oauth2/callback"
-redirect_url = "http://oauth.localhost:4180/oauth2/callback"
+# redirect_url = "http://oauth.localhost:4180/oauth2/callback"
 
 ## pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream
 # pass_basic_auth = true
@@ -34,11 +34,12 @@ code_challenge_method = "S256"
 
 ## Provider Settings
 provider = "github"
+github_org = ""
 github_users = "cturner8"
 
 ## Scopes Added to the request
 ## It has the same behavior as the --scope flag
-# scope = "openid email profile"
+scope = "openid, read:user, profile"
 
 ## Pass OAuth Access token to upstream via "X-Forwarded-Access-Token"
 # pass_access_token = false
