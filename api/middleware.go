@@ -6,7 +6,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -49,5 +52,55 @@ func createLoggingMiddleware() mcp.Middleware {
 
 			return result, err
 		}
+	}
+}
+
+// isOriginAllowed checks if the given origin is in the allowed list.
+// An empty allowed list means all origins are permitted.
+func isOriginAllowed(origin string, allowedOrigins []string) bool {
+	if len(allowedOrigins) == 0 {
+		return true
+	}
+	for _, allowed := range allowedOrigins {
+		if strings.EqualFold(origin, allowed) {
+			return true
+		}
+	}
+	return false
+}
+
+// createCORSMiddleware returns HTTP middleware that adds CORS headers for the given allowed origins.
+func createCORSMiddleware(allowedOrigins []string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// If there are no allowed origins, skip CORS
+			if len(allowedOrigins) == 0 {
+				fmt.Println("No allowed origins configured, skipping CORS headers")
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			fmt.Println("Attempting to apply CORS headers")
+
+			origin := r.Header.Get("Origin")
+			if origin != "" && isOriginAllowed(origin, allowedOrigins) {
+				fmt.Printf("Applying CORS headers for origin: %s\n", origin)
+
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, mcp-protocol-version")
+				w.Header().Set("Access-Control-Max-Age", "3600")
+			}
+
+			// Handle preflight requests
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			fmt.Println("CORS origin check complete")
+
+			next.ServeHTTP(w, r)
+		})
 	}
 }
