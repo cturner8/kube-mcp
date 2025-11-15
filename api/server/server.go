@@ -33,7 +33,7 @@ func StartServer() {
 
 	// Add the tools
 	mcp.AddTool(server, tools.GetServerVersionTool, tools.GetServerVersion)
-	mcp.AddTool(server, tools.GetNodesTool, tools.GetNodes)
+	mcp.AddTool(server, tools.ListNodesTool, tools.ListNodes)
 
 	// Create the streamable HTTP handler.
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {

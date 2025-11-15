@@ -10,13 +10,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var GetNodesTool = &mcp.Tool{
-	Name:        "get_nodes",
-	Description: "Get the nodes in the Kubernetes cluster",
+var ListNodesTool = &mcp.Tool{
+	Name:        "list_nodes",
+	Description: "List the nodes in the Kubernetes cluster",
 }
 
-// GetNodes implements the tool that returns the nodes registered in the Kubernetes cluster
-func GetNodes(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+// ListNodes implements the tool that returns the nodes registered in the Kubernetes cluster
+func ListNodes(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
 	nodes, err := kubernetesApiClient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
