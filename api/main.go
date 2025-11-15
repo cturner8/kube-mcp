@@ -17,7 +17,6 @@ func main() {
 
 	// Construct the server URL.
 	url := fmt.Sprintf("%s:%d", *config.Host, *config.Port)
-	baseUrl := fmt.Sprintf("http://%s", url) // TODO: Fix protocol
 	// Start the MCP server.
-	startServer(url, baseUrl)
+	startServer(url, config.PublicBaseURL.String())
 }
