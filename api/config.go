@@ -15,6 +15,7 @@ import (
 )
 
 type McpServerConfig struct {
+	PublicBaseURL  *url.URL
 	Host           *string
 	Port           *int
 	OutOfCluster   *bool
@@ -33,13 +34,14 @@ type McpServerCliConfig struct {
 }
 
 type McpServerEnvConfig struct {
-	IssuerURL url.URL
-	ClientID  string
+	PublicBaseURL url.URL
+	IssuerURL     url.URL
+	ClientID      string
 }
 
 func getMcpServerCliFlags() McpServerCliConfig {
 	var (
-		host           = flag.String("host", "localhost", "host to connect to/listen on")
+		host           = flag.String("host", "", "host to connect to/listen on")
 		port           = flag.Int("port", 9000, "port number to connect to/listen on")
 		outOfCluster   = flag.Bool("out-of-cluster", false, "(optional) indicates the server is running outside of a Kubernetes cluster and should look for a kubeconfig file")
 		allowedOrigins = flag.String("allowed-origins", "", "(optional) comma-separated list of allowed CORS origins")
@@ -67,10 +69,14 @@ func getMcpServerCliFlags() McpServerCliConfig {
 
 func getMcpServerEnvConfig() McpServerEnvConfig {
 	var (
+		PUBLIC_BASE_URL, PUBLIC_BASE_URL_SET = os.LookupEnv("PUBLIC_BASE_URL")
 		OIDC_ISSUER_URL, OIDC_ISSUER_URL_SET = os.LookupEnv("OIDC_ISSUER_URL")
 		OIDC_CLIENT_ID, OIDC_CLIENT_ID_SET   = os.LookupEnv("OIDC_CLIENT_ID")
 	)
 
+	if !PUBLIC_BASE_URL_SET {
+		panic("[PUBLIC_BASE_URL] environment variable is required")
+	}
 	if !OIDC_ISSUER_URL_SET {
 		panic("[OIDC_ISSUER_URL] environment variable is required")
 	}
@@ -83,9 +89,15 @@ func getMcpServerEnvConfig() McpServerEnvConfig {
 		panic("[OIDC_ISSUER_URL] environment variable is not a valid URL")
 	}
 
+	publicBaseURL, err := url.Parse(PUBLIC_BASE_URL)
+	if err != nil {
+		panic("[PUBLIC_BASE_URL] environment variable is not a valid URL")
+	}
+
 	return McpServerEnvConfig{
-		IssuerURL: *issuerURL,
-		ClientID:  OIDC_CLIENT_ID,
+		PublicBaseURL: *publicBaseURL,
+		IssuerURL:     *issuerURL,
+		ClientID:      OIDC_CLIENT_ID,
 	}
 }
 
@@ -105,6 +117,7 @@ func getMcpServerConfig() McpServerConfig {
 
 	// Build the complete server configuration
 	return McpServerConfig{
+		PublicBaseURL:  &envConfig.PublicBaseURL,
 		IssuerURL:      &envConfig.IssuerURL,
 		ClientID:       envConfig.ClientID,
 		Host:           cliConfig.Host,
