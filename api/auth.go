@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -32,25 +30,6 @@ func (c *JWTClaims) Validate(ctx context.Context) error {
 		return errors.New("should reject was set to true")
 	}
 	return nil
-}
-
-func getOidcConfig() (*url.URL, string) {
-	var OIDC_ISSUER_URL, OIDC_ISSUER_URL_SET = os.LookupEnv("OIDC_ISSUER_URL")
-	var OIDC_CLIENT_ID, OIDC_CLIENT_ID_SET = os.LookupEnv("OIDC_CLIENT_ID")
-
-	if !OIDC_ISSUER_URL_SET {
-		panic("[OIDC_ISSUER_URL] environment variable is required")
-	}
-	if !OIDC_CLIENT_ID_SET {
-		panic("[OIDC_CLIENT_ID] environment variable is required")
-	}
-
-	issuerURL, err := url.Parse(OIDC_ISSUER_URL)
-	if err != nil {
-		panic("[OIDC_ISSUER_URL] environment variable is not a valid URL")
-	}
-
-	return issuerURL, OIDC_CLIENT_ID
 }
 
 func getCustomClaims() validator.CustomClaims {
@@ -91,15 +70,13 @@ func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.Pro
 }
 
 func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Handler {
-	issuerURL, clientId := getOidcConfig()
-
-	jwksProvider := jwks.NewCachingProvider(issuerURL, time.Minute*5) // Cache JWKS for 5 minutes
+	jwksProvider := jwks.NewCachingProvider(config.IssuerURL, time.Minute*5) // Cache JWKS for 5 minutes
 	// Set up the validator.
 	jwtValidator, err := validator.New(
 		jwksProvider.KeyFunc,
 		validator.RS256,
-		issuerURL.String(),
-		[]string{clientId},
+		config.IssuerURL.String(),
+		[]string{config.ClientID},
 		validator.WithCustomClaims(getCustomClaims),
 		validator.WithAllowedClockSkew(30*time.Second),
 	)
@@ -139,8 +116,7 @@ func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Ha
 // getProtectedResourceMetadataHandler returns the Protected Resource Metadata
 // as JSON. This endpoint is typically served at /.well-known/oauth-protected-resource
 func getProtectedResourceMetadataHandler(baseUrl string) http.HandlerFunc {
-	issuerURL, _ := getOidcConfig()
-	metadata := getProtectedResourceMetadata(baseUrl, issuerURL.String())
+	metadata := getProtectedResourceMetadata(baseUrl, config.IssuerURL.String())
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
