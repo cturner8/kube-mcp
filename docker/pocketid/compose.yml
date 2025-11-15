@@ -22,6 +22,8 @@ services:
     security_opt:
       - no-new-privileges:true
     command: [
+      --providers.file.directory=/etc/traefik/conf,
+      --providers.file.watch=true,
       --providers.docker=true,
       --providers.docker.exposedByDefault=false,
       --entrypoints.web.address=:8080,
@@ -40,6 +42,13 @@ services:
       - internal
     volumes:
       - acme_data:/etc/traefik/acme
+    configs:
+      - source: traefik_config
+        target: /etc/traefik/conf/traefik.yml
+      - source: traefik_cert
+        target: /etc/traefik/tls/localhost.pem
+      - source: traefik_cert_key
+        target: /etc/traefik/tls/localhost-key.pem
 
 volumes:
   auth_data: {}
@@ -47,3 +56,11 @@ volumes:
 
 networks:
   internal: {}
+
+configs:
+  traefik_config:
+    file: ./traefik.config.yml
+  traefik_cert:
+    file: ./certs/auth.localhost.pem
+  traefik_cert_key:
+    file: ./certs/auth.localhost-key.pem
