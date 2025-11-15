@@ -15,8 +15,7 @@ var ListNodesTool = &mcp.Tool{
 	Description: "List the nodes in the Kubernetes cluster",
 }
 
-// ListNodes implements the tool that returns the nodes registered in the Kubernetes cluster
-func ListNodes(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+func ListNodesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
 	nodes, err := kubernetesApiClient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})

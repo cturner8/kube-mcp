@@ -11,8 +11,7 @@ var GetServerVersionTool = &mcp.Tool{
 	Description: "Get the Kubernetes API server version details",
 }
 
-// GetServerVersion implements the tool that returns the Kubernetes API server version details
-func GetServerVersion(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+func GetServerVersionHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	version, err := kubernetesApiClient.Discovery().ServerVersion()
 	if err != nil {
 		return nil, nil, err
