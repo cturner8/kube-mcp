@@ -9,25 +9,27 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"k8s.io/client-go/util/homedir"
 )
 
 type McpServerConfig struct {
-	Host         *string
-	Port         *int
-	OutOfCluster *bool
-	Kubeconfig   *string
-	IssuerURL    *url.URL
-	ClientID     string
-	AllowOrigins []string
+	Host           *string
+	Port           *int
+	OutOfCluster   *bool
+	Kubeconfig     *string
+	IssuerURL      *url.URL
+	ClientID       string
+	AllowedOrigins []string
 }
 
 type McpServerCliConfig struct {
-	Host         *string
-	Port         *int
-	OutOfCluster *bool
-	Kubeconfig   *string
+	Host           *string
+	Port           *int
+	OutOfCluster   *bool
+	Kubeconfig     *string
+	AllowedOrigins []string
 }
 
 type McpServerEnvConfig struct {
@@ -37,9 +39,10 @@ type McpServerEnvConfig struct {
 
 func getMcpServerCliFlags() McpServerCliConfig {
 	var (
-		host         = flag.String("host", "localhost", "host to connect to/listen on")
-		port         = flag.Int("port", 9000, "port number to connect to/listen on")
-		outOfCluster = flag.Bool("out-of-cluster", false, "(optional) indicates the server is running outside of a Kubernetes cluster and should look for a kubeconfig file")
+		host           = flag.String("host", "localhost", "host to connect to/listen on")
+		port           = flag.Int("port", 9000, "port number to connect to/listen on")
+		outOfCluster   = flag.Bool("out-of-cluster", false, "(optional) indicates the server is running outside of a Kubernetes cluster and should look for a kubeconfig file")
+		allowedOrigins = flag.String("allowed-origins", "", "(optional) comma-separated list of allowed CORS origins")
 	)
 
 	// Attempt to resolve a local kubeconfig path.
@@ -54,10 +57,11 @@ func getMcpServerCliFlags() McpServerCliConfig {
 	flag.Parse()
 
 	return McpServerCliConfig{
-		Host:         host,
-		Port:         port,
-		OutOfCluster: outOfCluster,
-		Kubeconfig:   kubeconfig,
+		Host:           host,
+		Port:           port,
+		OutOfCluster:   outOfCluster,
+		Kubeconfig:     kubeconfig,
+		AllowedOrigins: strings.Split(*allowedOrigins, ","),
 	}
 }
 
@@ -91,13 +95,22 @@ func getMcpServerConfig() McpServerConfig {
 	// Parse CLI flag configuration
 	cliConfig := getMcpServerCliFlags()
 
+	// Filter out empty strings from allowed origins
+	allowedOrigins := []string{}
+	for _, origin := range cliConfig.AllowedOrigins {
+		if trimmed := strings.TrimSpace(origin); trimmed != "" {
+			allowedOrigins = append(allowedOrigins, trimmed)
+		}
+	}
+
 	// Build the complete server configuration
 	return McpServerConfig{
-		IssuerURL:    &envConfig.IssuerURL,
-		ClientID:     envConfig.ClientID,
-		Host:         cliConfig.Host,
-		Port:         cliConfig.Port,
-		OutOfCluster: cliConfig.OutOfCluster,
-		Kubeconfig:   cliConfig.Kubeconfig,
+		IssuerURL:      &envConfig.IssuerURL,
+		ClientID:       envConfig.ClientID,
+		Host:           cliConfig.Host,
+		Port:           cliConfig.Port,
+		OutOfCluster:   cliConfig.OutOfCluster,
+		Kubeconfig:     cliConfig.Kubeconfig,
+		AllowedOrigins: allowedOrigins,
 	}
 }
