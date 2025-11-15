@@ -23,6 +23,11 @@ This will allow access to the Kubernetes Dashboard app as well as the Kubernetes
 cd api
 # Install dependencies (if not already present)
 go mod tidy
+# Set required env variables
+## URL of your OIDC Issuer. For local dev, can be https://auth.localhost:8443
+export OIDC_ISSUER_URL=""
+## Client ID of your Kube MCP OAuth Client 
+export OIDC_CLIENT_ID=""
 # Start the server in out of cluster mode
 go run . --out-of-cluster
 ```
@@ -32,7 +37,9 @@ go run . --out-of-cluster
 Start the MCP inspector using npm:
 
 ```sh
-npx @modelcontextprotocol/inspector --transport http http://localhost:9000
+npx @modelcontextprotocol/inspector --transport http http://localhost:9000/mcp
+# (Optional) Disable auto-open in browser when starting the inspector
+MCP_AUTO_OPEN_ENABLED=false npx @modelcontextprotocol/inspector --transport http http://localhost:9000/mcp
 ```
 
 Once the inspector opens, ensure the "HTTP" transport is selected and Connection Type is "Via Proxy".
