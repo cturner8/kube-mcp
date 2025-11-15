@@ -41,9 +41,9 @@ go run . --allowed-origins http://localhost:6274
 Start the MCP inspector using npm:
 
 ```sh
-npx @modelcontextprotocol/inspector --transport http http://localhost:9000/mcp
+npx @modelcontextprotocol/inspector --transport http --server-url http://localhost:9000/mcp
 # (Optional) Disable auto-open in browser when starting the inspector
-MCP_AUTO_OPEN_ENABLED=false npx @modelcontextprotocol/inspector --transport http http://localhost:9000/mcp
+MCP_AUTO_OPEN_ENABLED=false npx @modelcontextprotocol/inspector --transport http --server-url http://localhost:9000/mcp
 ```
 
 Once the inspector opens, ensure the "HTTP" transport is selected and Connection Type is "Via Proxy".
