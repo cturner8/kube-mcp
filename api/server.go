@@ -14,9 +14,10 @@ func startServer(httpUrl string, baseUrl string) {
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "kube-mcp",
 		Version: "0.0.0",
+		Title:   "Kubernetes API MCP",
 	}, nil)
 
-	// Add MCP-level logging middleware.
+	// Add MCP-level middlewares.
 	server.AddReceivingMiddleware(createLoggingMiddleware())
 
 	// Add the tools
@@ -32,9 +33,14 @@ func startServer(httpUrl string, baseUrl string) {
 
 	prmPath := "/.well-known/oauth-protected-resource"
 
+	// Add HTTP middlewares
+	// Add CORS middleware
+	corsMiddleware := createCORSMiddleware(config.AllowedOrigins)
+
 	// Add the authentication middleware.
 	bearerAuth := createBearerAuth(baseUrl, prmPath)
 	authenticatedHandler := bearerAuth(handler)
+	authenticatedHandler = corsMiddleware(authenticatedHandler)
 
 	// Setup HTTP routes
 
@@ -47,7 +53,9 @@ func startServer(httpUrl string, baseUrl string) {
 		})
 	})
 	// Create a wrapper handler that routes to either the metadata endpoint or the MCP handler
-	http.HandleFunc(prmPath, getProtectedResourceMetadataHandler(baseUrl))
+	// Apply CORS middleware to the metadata endpoint
+	metadataHandler := getProtectedResourceMetadataHandler(baseUrl)
+	http.HandleFunc(prmPath, corsMiddleware(metadataHandler).ServeHTTP)
 
 	// Register the authenticated MCP handler
 	http.HandleFunc("/mcp", authenticatedHandler.ServeHTTP)
