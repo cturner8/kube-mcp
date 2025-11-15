@@ -28,13 +28,10 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`dashboard.localhost`)"
     command: [
       --providers.docker=true,
       --providers.docker.exposedByDefault=false,
-      --entrypoints.web.address=:8000,
+      --entrypoints.web.address=:8080,
       --entrypoints.web.http.redirections.entryPoint.to=websecure,
       --entrypoints.web.http.redirections.entryPoint.scheme=https,
       --entrypoints.web.http.redirections.entryPoint.permanent=true,
@@ -43,7 +40,6 @@ services:
       --entryPoints.websecure.asDefault=true,
     ]
     ports:
-      - 8000:8000
       - 8080:8080
       - 8443:8443
     use_api_socket: true
