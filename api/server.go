@@ -21,10 +21,8 @@ func startServer(httpUrl string, baseUrl string) {
 	server.AddReceivingMiddleware(createLoggingMiddleware())
 
 	// Add the tools
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "get_server_version",
-		Description: "Get the Kubernetes API server version details",
-	}, getServerVersion)
+	mcp.AddTool(server, getServerVersionTool, getServerVersion)
+	mcp.AddTool(server, getNodesTool, getNodes)
 
 	// Create the streamable HTTP handler.
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
