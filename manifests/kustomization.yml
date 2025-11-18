@@ -1,0 +1,9 @@
+---
+namespace: kube-mcp
+
+resources:
+  - namespace.yml
+  - service-account.yml
+  - role.yml
+  - deployment.yml
+  - service.yml
