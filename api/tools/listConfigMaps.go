@@ -15,10 +15,19 @@ var ListConfigMapsTool = &mcp.Tool{
 	Description: "List the config maps in the Kubernetes cluster",
 }
 
-func ListConfigMapsHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+type ListConfigMapsToolParams struct {
+	Namespace *string `json:"namespace,omitempty" jsonschema:"The namespace of the config maps"`
+}
+
+func ListConfigMapsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListConfigMapsToolParams) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
-	configMaps, err := kubernetesApiClient.CoreV1().ConfigMaps("").List(ctx, metav1.ListOptions{})
+	namespace := ""
+	if params.Namespace != nil {
+		namespace = *params.Namespace
+	}
+
+	configMaps, err := kubernetesApiClient.CoreV1().ConfigMaps(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

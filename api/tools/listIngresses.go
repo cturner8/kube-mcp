@@ -15,10 +15,19 @@ var ListIngressesTool = &mcp.Tool{
 	Description: "List the ingresses in the Kubernetes cluster",
 }
 
-func ListIngressesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+type ListIngressesToolParams struct {
+	Namespace *string `json:"namespace,omitempty" jsonschema:"The namespace of the ingress(es)"`
+}
+
+func ListIngressesHandler(ctx context.Context, req *mcp.CallToolRequest, params ListIngressesToolParams) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
-	ingresses, err := kubernetesApiClient.NetworkingV1().Ingresses("").List(ctx, metav1.ListOptions{})
+	namespace := ""
+	if params.Namespace != nil {
+		namespace = *params.Namespace
+	}
+
+	ingresses, err := kubernetesApiClient.NetworkingV1().Ingresses(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

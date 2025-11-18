@@ -15,10 +15,19 @@ var ListPodsTool = &mcp.Tool{
 	Description: "List the pods in the Kubernetes cluster",
 }
 
-func ListPodsHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+type ListPodsToolParams struct {
+	Namespace *string `json:"namespace,omitempty" jsonschema:"The namespace of the pods"`
+}
+
+func ListPodsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListPodsToolParams) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
-	pods, err := kubernetesApiClient.CoreV1().Pods("").List(ctx, metav1.ListOptions{})
+	namespace := ""
+	if params.Namespace != nil {
+		namespace = *params.Namespace
+	}
+
+	pods, err := kubernetesApiClient.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

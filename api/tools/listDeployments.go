@@ -15,10 +15,19 @@ var ListDeploymentsTool = &mcp.Tool{
 	Description: "List the deployments in the Kubernetes cluster",
 }
 
-func ListDeploymentsHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+type ListDeploymentsToolParams struct {
+	Namespace *string `json:"namespace,omitempty" jsonschema:"The namespace of the deployments"`
+}
+
+func ListDeploymentsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListDeploymentsToolParams) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
-	deployments, err := kubernetesApiClient.AppsV1().Deployments("").List(ctx, metav1.ListOptions{})
+	namespace := ""
+	if params.Namespace != nil {
+		namespace = *params.Namespace
+	}
+
+	deployments, err := kubernetesApiClient.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

@@ -15,10 +15,19 @@ var ListSecretsTool = &mcp.Tool{
 	Description: "List the secrets in the Kubernetes cluster",
 }
 
-func ListSecretsHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+type ListSecretsToolParams struct {
+	Namespace *string `json:"namespace,omitempty" jsonschema:"The namespace of the secrets"`
+}
+
+func ListSecretsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListSecretsToolParams) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
-	secrets, err := kubernetesApiClient.CoreV1().Secrets("").List(ctx, metav1.ListOptions{})
+	namespace := ""
+	if params.Namespace != nil {
+		namespace = *params.Namespace
+	}
+
+	secrets, err := kubernetesApiClient.CoreV1().Secrets(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

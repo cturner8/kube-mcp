@@ -15,10 +15,19 @@ var ListServicesTool = &mcp.Tool{
 	Description: "List the services in the Kubernetes cluster",
 }
 
-func ListServicesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
+type ListServicesToolParams struct {
+	Namespace *string `json:"namespace,omitempty" jsonschema:"The namespace of the services"`
+}
+
+func ListServicesHandler(ctx context.Context, req *mcp.CallToolRequest, params ListServicesToolParams) (*mcp.CallToolResult, any, error) {
 	log.Printf("Invoking '%s' tool", req.Params.Name)
 
-	services, err := kubernetesApiClient.CoreV1().Services("").List(ctx, metav1.ListOptions{})
+	namespace := ""
+	if params.Namespace != nil {
+		namespace = *params.Namespace
+	}
+
+	services, err := kubernetesApiClient.CoreV1().Services(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}
