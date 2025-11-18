@@ -125,6 +125,11 @@ func getProtectedResourceMetadataHandler(baseUrl string) http.HandlerFunc {
 	metadata := getProtectedResourceMetadata(baseUrl, config.ServerConfig.IssuerURL.String())
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(metadata); err != nil {
 			http.Error(w, "Failed to encode metadata", http.StatusInternalServerError)
