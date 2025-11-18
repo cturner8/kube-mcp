@@ -33,6 +33,9 @@ func StartServer() {
 	mcp.AddTool(server, tools.ListIngressesTool, tools.ListIngressesHandler)
 	mcp.AddTool(server, tools.ListPersistentVolumesTool, tools.ListPersistentVolumesHandler)
 	mcp.AddTool(server, tools.ListPersistentVolumeClaimsTool, tools.ListPersistentVolumeClaimsHandler)
+	mcp.AddTool(server, tools.ListPodsTool, tools.ListPodsHandler)
+	mcp.AddTool(server, tools.ListConfigMapsTool, tools.ListConfigMapsHandler)
+	mcp.AddTool(server, tools.ListSecretsTool, tools.ListSecretsHandler)
 
 	// Create the streamable HTTP handler.
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
