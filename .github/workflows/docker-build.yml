@@ -1,0 +1,71 @@
+name: docker-build
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/kube-mcp
+
+on:
+  workflow_dispatch: {}
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "api/Dockerfile"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.1
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.11.1
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5.9.0
+        env:
+          SUBJECT: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        with:
+          images: ${{ env.SUBJECT }}
+          flavor: |
+            latest=true
+          tags: |
+            type=ref,event=branch
+
+      - name: Build and Push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v6.18.0
+        with:
+          file: api/Dockerfile
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Sign the published Docker image
+        if: ${{ env.TAGS }}
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        # This step uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance.
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
