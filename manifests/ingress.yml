@@ -1,0 +1,17 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kube-mcp
+spec:
+  rules:
+  - host: mcp.kube.dev.cturner.xyz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kube-mcp
+            port:
+              number: 9000
