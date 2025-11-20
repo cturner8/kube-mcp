@@ -21,9 +21,9 @@ spec:
           image: ghcr.io/cturner8/kube-mcp:dev
           env:
             - name: PUBLIC_BASE_URL
-              value: "http://localhost:9000"
+              value: "https://mcp.kube.dev.cturner.xyz:8443"
             - name: OIDC_ISSUER_URL
-              value: "https://auth.localhost:8443"
+              value: "https://auth.kube.dev.cturner.xyz:8443"
             - name: OIDC_CLIENT_ID
               value: "10742d2e-1f00-4b19-8412-5a2f77b53b4d"
           args: [
