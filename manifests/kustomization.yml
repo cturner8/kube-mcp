@@ -7,3 +7,4 @@ resources:
   - role.yml
   - deployment.yml
   - service.yml
+  - auth.yml
