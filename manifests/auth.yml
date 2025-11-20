@@ -33,7 +33,7 @@ spec:
           image: ghcr.io/pocket-id/pocket-id:v1
           env:
             - name: APP_URL
-              value: https://auth.kube.dev.cturner.xyz:8443
+              value: https://auth.kube.dev.cturner.xyz
             - name: TRUST_PROXY
               value: "true"
           ports:
