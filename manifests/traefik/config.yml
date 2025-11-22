@@ -8,7 +8,7 @@ metadata:
 spec:
   valuesContent: |-
     env:
-    - name: TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL
+    - name: TRAEFIK_CERTIFICATESRESOLVERS_cloudflare_ACME_EMAIL
       valueFrom:
         secretKeyRef:
           name: traefik-acme-credentials
@@ -32,16 +32,16 @@ spec:
         asDefault: true
         tls:
           enabled: true
-          certResolver: letsencrypt
+          certResolver: cloudflare
           domains:
-            - main: "dev.cturner.xyz"
+            - main: "kube.dev.cturner.xyz"
               sans:
-                - "*.dev.cturner.xyz"
+                - "*.kube.dev.cturner.xyz"
     certificatesResolvers:
-      letsencrypt:
+      cloudflare:
         acme:
           storage: "/data/acme.json"
-          caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+          caServer: "https://acme-v02.api.letsencrypt.org/directory"
           dnsChallenge:
             provider: cloudflare
             resolvers:
@@ -50,8 +50,8 @@ spec:
     tlsStore:
       default:
         defaultGeneratedCert:
-          resolver: letsencrypt
+          resolver: cloudflare
           domain:
-            main: "dev.cturner.xyz"
+            main: "kube.dev.cturner.xyz"
             sans:
-              - "*.dev.cturner.xyz"
+              - "*.kube.dev.cturner.xyz"
