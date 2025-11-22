@@ -1,19 +1,12 @@
 {
-	"servers": {
-		"kube-mcp-dev": {
-			"url": "http://localhost:9000/mcp",
-			"type": "http",
-			"headers": {
-				"Authorization": "Bearer ${input:mcp-bearer-token}"
-			}
-		}
-	},
-	"inputs": [
-		{
-			"id": "mcp-bearer-token",
-			"type": "promptString",
-			"password": true,
-			"description": "Bearer token for MCP server authentication"
-		}
-	]
+  "servers": {
+    "kube-mcp-local": {
+      "url": "http://localhost:9000/mcp",
+      "type": "http"
+    },
+    "kube-mcp-dev": {
+      "url": "https://mcp.kube.dev.cturner.xyz/mcp",
+      "type": "http"
+    }
+  }
 }
