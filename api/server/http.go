@@ -51,7 +51,7 @@ func serve(handler *mcp.StreamableHTTPHandler) {
 	http.HandleFunc(prmPath, corsMiddleware(metadataHandler).ServeHTTP)
 
 	// Register the authenticated MCP handler
-	http.HandleFunc("/mcp", authenticatedHandler.ServeHTTP)
+	http.HandleFunc("/", authenticatedHandler.ServeHTTP)
 
 	log.Printf("MCP server listening on %s", httpUrl)
 	log.Printf("Protected Resource Metadata available at %s%s", baseUrl, prmPath)

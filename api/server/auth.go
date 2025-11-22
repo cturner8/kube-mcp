@@ -47,7 +47,7 @@ func getCustomClaims() validator.CustomClaims {
 func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.ProtectedResourceMetadata {
 	return &oauthex.ProtectedResourceMetadata{
 		// Required: The resource identifier for this server
-		Resource: fmt.Sprintf("%s/mcp", baseUrl),
+		Resource: baseUrl,
 
 		// Optional: Authorization servers that can issue tokens for this resource
 		AuthorizationServers: []string{issuerURL},
