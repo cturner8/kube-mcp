@@ -73,21 +73,22 @@ spec:
       name: http
   selector:
     app: pocketid
---- 
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pocketid
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
-  - host: auth.kube.dev.cturner.xyz
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: pocketid
-            port:
-              number: 1411
----
+    - host: auth.kube.dev.cturner.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pocketid
+                port:
+                  number: 1411
