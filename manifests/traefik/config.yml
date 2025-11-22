@@ -1,0 +1,57 @@
+# LE Prod: https://acme-v02.api.letsencrypt.org/directory
+# LE Staging: https://acme-staging-v02.api.letsencrypt.org/directory
+
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+spec:
+  valuesContent: |-
+    env:
+    - name: TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL
+      valueFrom:
+        secretKeyRef:
+          name: traefik-acme-credentials
+          key: email
+    - name: CF_DNS_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: traefik-acme-credentials
+          key: api_token
+    persistence:
+      enabled: true
+      path: "/data"
+    ports:
+      web:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
+      websecure:
+        asDefault: true
+        tls:
+          enabled: true
+          certResolver: letsencrypt
+          domains:
+            - main: "dev.cturner.xyz"
+              sans:
+                - "*.dev.cturner.xyz"
+    certificatesResolvers:
+      letsencrypt:
+        acme:
+          storage: "/data/acme.json"
+          caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+          dnsChallenge:
+            provider: cloudflare
+            resolvers:
+              - "1.1.1.1:53"
+              - "8.8.8.8:53"
+    tlsStore:
+      default:
+        defaultGeneratedCert:
+          resolver: letsencrypt
+          domain:
+            main: "dev.cturner.xyz"
+            sans:
+              - "*.dev.cturner.xyz"
