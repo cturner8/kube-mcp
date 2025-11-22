@@ -1,7 +1,7 @@
 {
   "servers": {
     "kube-mcp-local": {
-      "url": "http://localhost:9000/mcp",
+      "url": "http://localhost:9000",
       "type": "http"
     },
     "kube-mcp-dev": {
