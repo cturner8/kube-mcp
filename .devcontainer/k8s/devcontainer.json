@@ -9,6 +9,10 @@
   "features": {
     "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
       "minikube": "none"
+    },
+    "ghcr.io/devcontainers-extra/features/gh-release": {
+      "repo": "derailed/k9s",
+       "binaryNames": "k9s"
     }
   },
 
