@@ -16,8 +16,8 @@ import (
 )
 
 func serve(handler *mcp.StreamableHTTPHandler) {
-	httpUrl := fmt.Sprintf("%s:%d", *config.ServerConfig.Host, *config.ServerConfig.Port)
-	baseUrl := config.ServerConfig.PublicBaseURL.String()
+	httpUrl := fmt.Sprintf("%s:%s", *config.ServerConfig.Host, *config.ServerConfig.Port)
+	baseUrl := config.ServerConfig.BaseURL.String()
 
 	prmPath := "/.well-known/oauth-protected-resource"
 

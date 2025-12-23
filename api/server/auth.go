@@ -76,13 +76,13 @@ func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.Pro
 }
 
 func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Handler {
-	jwksProvider := jwks.NewCachingProvider(config.ServerConfig.IssuerURL, time.Minute*5) // Cache JWKS for 5 minutes
+	jwksProvider := jwks.NewCachingProvider(&config.ServerConfig.OidcIssuerURL, time.Minute*5) // Cache JWKS for 5 minutes
 	// Set up the validator.
 	jwtValidator, err := validator.New(
 		jwksProvider.KeyFunc,
 		validator.RS256,
-		config.ServerConfig.IssuerURL.String(),
-		[]string{config.ServerConfig.ClientID},
+		config.ServerConfig.OidcIssuerURL.String(),
+		[]string{config.ServerConfig.OidcClientID},
 		validator.WithCustomClaims(getCustomClaims),
 		validator.WithAllowedClockSkew(30*time.Second),
 	)
@@ -122,7 +122,7 @@ func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Ha
 // getProtectedResourceMetadataHandler returns the Protected Resource Metadata
 // as JSON. This endpoint is typically served at /.well-known/oauth-protected-resource
 func getProtectedResourceMetadataHandler(baseUrl string) http.HandlerFunc {
-	metadata := getProtectedResourceMetadata(baseUrl, config.ServerConfig.IssuerURL.String())
+	metadata := getProtectedResourceMetadata(baseUrl, config.ServerConfig.OidcIssuerURL.String())
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
