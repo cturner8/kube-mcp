@@ -48,28 +48,20 @@ func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.Pro
 	return &oauthex.ProtectedResourceMetadata{
 		// Required: The resource identifier for this server
 		Resource: baseUrl,
-
 		// Optional: Authorization servers that can issue tokens for this resource
 		AuthorizationServers: []string{issuerURL},
-
 		// Optional: Human-readable name for the resource
 		ResourceName: "Kubernetes MCP Server",
-
 		// Optional: Documentation URL for developers
 		ResourceDocumentation: "https://github.com/cturner8/kube-mcp",
-
 		// Optional: Scopes supported by this resource
 		ScopesSupported: []string{"read", "write", "admin"},
-
 		// Optional: Bearer token methods supported
 		BearerMethodsSupported: []string{"header"},
-
 		// Optional: JWS signing algorithms supported by the resource
 		ResourceSigningAlgValuesSupported: []string{"HS256", "RS256"},
-
 		// Optional: Support for Authorization Details (RFC 9396)
 		AuthorizationDetailsTypesSupported: []string{},
-
 		// Optional: DPoP support
 		DPOPBoundAccessTokensRequired: false,
 	}

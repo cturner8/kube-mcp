@@ -22,11 +22,11 @@ spec:
         - name: kube-mcp
           image: ghcr.io/cturner8/kube-mcp:dev
           env:
-            - name: PUBLIC_BASE_URL
+            - name: KUBE_MCP_BASE_URL
               value: "https://mcp.kube.dev.cturner.xyz"
-            - name: OIDC_ISSUER_URL
+            - name: KUBE_MCP_OIDC_ISSUER_URL
               value: "https://auth.kube.dev.cturner.xyz"
-            - name: OIDC_CLIENT_ID
+            - name: KUBE_MCP_OIDC_CLIENT_ID
               value: "10742d2e-1f00-4b19-8412-5a2f77b53b4d"
           args: [
             "--allowed-origins",

@@ -5,9 +5,9 @@ services:
       context: api
       target: final
     environment:
-      PUBLIC_BASE_URL: http://localhost:9000
-      OIDC_ISSUER_URL: https://auth.localhost:8443
-      OIDC_CLIENT_ID: 10742d2e-1f00-4b19-8412-5a2f77b53b4d
+      KUBE_MCP_BASE_URL: http://localhost:9000
+      KUBE_MCP_OIDC_ISSUER_URL: https://auth.localhost:8443
+      KUBE_MCP_OIDC_CLIENT_ID: 10742d2e-1f00-4b19-8412-5a2f77b53b4d
     command: [
       --allowed-origins,
       http://localhost:6274
