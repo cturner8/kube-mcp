@@ -5,6 +5,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -19,51 +20,119 @@ func StartServer() {
 		Version: "0.0.0",
 		Title:   "Kubernetes API MCP",
 	}, nil)
+	// Track the active tools based on configuration
+	activeTools := []string{}
 
 	// Add MCP middlewares.
 	server.AddReceivingMiddleware(createLoggingMiddleware())
 
 	// Add the tools
-	mcp.AddTool(server, tools.GetServerVersionTool, tools.GetServerVersionHandler)
+	if tools.IsToolAllowed(tools.GetServerVersionTool.Name) {
+		mcp.AddTool(server, tools.GetServerVersionTool, tools.GetServerVersionHandler)
+		activeTools = append(activeTools, tools.GetServerVersionTool.Name)
+	}
 
 	// API resource tools
 
 	// Nodes
-	mcp.AddTool(server, tools.ListNodesTool, tools.ListNodesHandler)
-	mcp.AddTool(server, tools.GetNodeTool, tools.GetNodeHandler)
+	if tools.IsToolAllowed(tools.ListNodesTool.Name) {
+		mcp.AddTool(server, tools.ListNodesTool, tools.ListNodesHandler)
+		activeTools = append(activeTools, tools.ListNodesTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetNodeTool.Name) {
+		mcp.AddTool(server, tools.GetNodeTool, tools.GetNodeHandler)
+		activeTools = append(activeTools, tools.GetNodeTool.Name)
+	}
 
 	// Namespaces
-	mcp.AddTool(server, tools.ListNamespacesTool, tools.ListNamespacesHandler)
-	mcp.AddTool(server, tools.GetNamespaceTool, tools.GetNamespaceHandler)
+	if tools.IsToolAllowed(tools.ListNamespacesTool.Name) {
+		mcp.AddTool(server, tools.ListNamespacesTool, tools.ListNamespacesHandler)
+		activeTools = append(activeTools, tools.ListNamespacesTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetNamespaceTool.Name) {
+		mcp.AddTool(server, tools.GetNamespaceTool, tools.GetNamespaceHandler)
+		activeTools = append(activeTools, tools.GetNamespaceTool.Name)
+	}
 
 	// Services
-	mcp.AddTool(server, tools.ListServicesTool, tools.ListServicesHandler)
-	mcp.AddTool(server, tools.GetServiceTool, tools.GetServiceHandler)
+	if tools.IsToolAllowed(tools.ListServicesTool.Name) {
+		mcp.AddTool(server, tools.ListServicesTool, tools.ListServicesHandler)
+		activeTools = append(activeTools, tools.ListServicesTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetServiceTool.Name) {
+		mcp.AddTool(server, tools.GetServiceTool, tools.GetServiceHandler)
+		activeTools = append(activeTools, tools.GetServiceTool.Name)
+	}
 
 	// Deployments
-	mcp.AddTool(server, tools.ListDeploymentsTool, tools.ListDeploymentsHandler)
-	mcp.AddTool(server, tools.GetDeploymentTool, tools.GetDeploymentHandler)
+	if tools.IsToolAllowed(tools.ListDeploymentsTool.Name) {
+		mcp.AddTool(server, tools.ListDeploymentsTool, tools.ListDeploymentsHandler)
+		activeTools = append(activeTools, tools.ListDeploymentsTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetDeploymentTool.Name) {
+		mcp.AddTool(server, tools.GetDeploymentTool, tools.GetDeploymentHandler)
+		activeTools = append(activeTools, tools.GetDeploymentTool.Name)
+	}
 
 	// Ingresses
-	mcp.AddTool(server, tools.ListIngressesTool, tools.ListIngressesHandler)
-	mcp.AddTool(server, tools.GetIngressTool, tools.GetIngressHandler)
+	if tools.IsToolAllowed(tools.ListIngressesTool.Name) {
+		mcp.AddTool(server, tools.ListIngressesTool, tools.ListIngressesHandler)
+		activeTools = append(activeTools, tools.ListIngressesTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetIngressTool.Name) {
+		mcp.AddTool(server, tools.GetIngressTool, tools.GetIngressHandler)
+		activeTools = append(activeTools, tools.GetIngressTool.Name)
+	}
 
 	// Persistent Volumes
-	mcp.AddTool(server, tools.ListPersistentVolumesTool, tools.ListPersistentVolumesHandler)
-	mcp.AddTool(server, tools.ListPersistentVolumeClaimsTool, tools.ListPersistentVolumeClaimsHandler)
-	mcp.AddTool(server, tools.GetPersistentVolumeTool, tools.GetPersistentVolumeHandler)
-	mcp.AddTool(server, tools.GetPersistentVolumeClaimTool, tools.GetPersistentVolumeClaimHandler)
+	if tools.IsToolAllowed(tools.ListPersistentVolumesTool.Name) {
+		mcp.AddTool(server, tools.ListPersistentVolumesTool, tools.ListPersistentVolumesHandler)
+		activeTools = append(activeTools, tools.ListPersistentVolumesTool.Name)
+	}
+	if tools.IsToolAllowed(tools.ListPersistentVolumeClaimsTool.Name) {
+		mcp.AddTool(server, tools.ListPersistentVolumeClaimsTool, tools.ListPersistentVolumeClaimsHandler)
+		activeTools = append(activeTools, tools.ListPersistentVolumeClaimsTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetPersistentVolumeTool.Name) {
+		mcp.AddTool(server, tools.GetPersistentVolumeTool, tools.GetPersistentVolumeHandler)
+		activeTools = append(activeTools, tools.GetPersistentVolumeTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetPersistentVolumeClaimTool.Name) {
+		mcp.AddTool(server, tools.GetPersistentVolumeClaimTool, tools.GetPersistentVolumeClaimHandler)
+		activeTools = append(activeTools, tools.GetPersistentVolumeClaimTool.Name)
+	}
 
-	mcp.AddTool(server, tools.ListPodsTool, tools.ListPodsHandler)
-	mcp.AddTool(server, tools.GetPodTool, tools.GetPodHandler)
+	// Pods
+	if tools.IsToolAllowed(tools.ListPodsTool.Name) {
+		mcp.AddTool(server, tools.ListPodsTool, tools.ListPodsHandler)
+		activeTools = append(activeTools, tools.ListPodsTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetPodTool.Name) {
+		mcp.AddTool(server, tools.GetPodTool, tools.GetPodHandler)
+		activeTools = append(activeTools, tools.GetPodTool.Name)
+	}
 
 	// ConfigMaps
-	mcp.AddTool(server, tools.ListConfigMapsTool, tools.ListConfigMapsHandler)
-	mcp.AddTool(server, tools.GetConfigMapTool, tools.GetConfigMapHandler)
+	if tools.IsToolAllowed(tools.ListConfigMapsTool.Name) {
+		mcp.AddTool(server, tools.ListConfigMapsTool, tools.ListConfigMapsHandler)
+		activeTools = append(activeTools, tools.ListConfigMapsTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetConfigMapTool.Name) {
+		mcp.AddTool(server, tools.GetConfigMapTool, tools.GetConfigMapHandler)
+		activeTools = append(activeTools, tools.GetConfigMapTool.Name)
+	}
 
 	// Secrets
-	mcp.AddTool(server, tools.ListSecretsTool, tools.ListSecretsHandler)
-	mcp.AddTool(server, tools.GetSecretTool, tools.GetSecretHandler)
+	if tools.IsToolAllowed(tools.ListSecretsTool.Name) {
+		mcp.AddTool(server, tools.ListSecretsTool, tools.ListSecretsHandler)
+		activeTools = append(activeTools, tools.ListSecretsTool.Name)
+	}
+	if tools.IsToolAllowed(tools.GetSecretTool.Name) {
+		mcp.AddTool(server, tools.GetSecretTool, tools.GetSecretHandler)
+		activeTools = append(activeTools, tools.GetSecretTool.Name)
+	}
+
+	log.Printf("%d tool(s) active", len(activeTools))
 
 	// Create the streamable HTTP handler.
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {
