@@ -6,41 +6,55 @@ import (
 )
 
 type McpServerConfig struct {
-	BaseURL        url.URL
-	Host           *string
-	Port           *string
-	OutOfCluster   *bool
-	Kubeconfig     *string
-	OidcIssuerURL  url.URL
-	OidcClientID   string
-	AllowedOrigins []string
+	BaseURL         url.URL
+	Host            *string
+	Port            *string
+	OutOfCluster    *bool
+	Kubeconfig      *string
+	OidcIssuerURL   url.URL
+	OidcClientID    string
+	AllowedOrigins  []string
+	AllowedTools    []string
+	DisallowedTools []string
 }
 
 type McpServerUserConfig struct {
-	BaseURL        string
-	Host           string
-	Port           string
-	OutOfCluster   bool
-	Kubeconfig     string
-	OidcIssuerURL  string
-	OidcClientID   string
-	AllowedOrigins string
+	BaseURL         string
+	Host            string
+	Port            string
+	OutOfCluster    bool
+	Kubeconfig      string
+	OidcIssuerURL   string
+	OidcClientID    string
+	AllowedOrigins  string
+	AllowedTools    string
+	DisallowedTools string
 }
 
 func parseServerUserConfig(config McpServerUserConfig) {
-	baseUrl := config.BaseURL
-	oidcIssuerUrl := config.OidcIssuerURL
-	oidcClientId := config.OidcClientID
-
-	if baseUrl == "" {
+	if config.BaseURL == "" {
 		panic("Base URL is required")
 	}
-	if oidcIssuerUrl == "" {
+	if config.OidcIssuerURL == "" {
 		panic("OIDC Issuer URL is required")
 	}
-	if oidcClientId == "" {
+	if config.OidcClientID == "" {
 		panic("OIDC Client ID is required")
 	}
+	if config.AllowedTools != "" && config.DisallowedTools != "" {
+		panic("Cannot specify both allowed-tools and disallowed-tools")
+	}
+}
+
+func splitStringArg(input string) []string {
+	// Filter out empty strings from value
+	output := []string{}
+	for value := range strings.SplitSeq(input, ",") {
+		if trimmed := strings.TrimSpace(value); trimmed != "" {
+			output = append(output, trimmed)
+		}
+	}
+	return output
 }
 
 func GetMcpServerConfig() McpServerConfig {
@@ -48,13 +62,9 @@ func GetMcpServerConfig() McpServerConfig {
 	config := getMcpServerCliFlags()
 	parseServerUserConfig(config)
 
-	// Filter out empty strings from allowed origins
-	allowedOrigins := []string{}
-	for origin := range strings.SplitSeq(config.AllowedOrigins, ",") {
-		if trimmed := strings.TrimSpace(origin); trimmed != "" {
-			allowedOrigins = append(allowedOrigins, trimmed)
-		}
-	}
+	allowedOrigins := splitStringArg(config.AllowedOrigins)
+	allowedTools := splitStringArg(config.AllowedTools)
+	disallowedTools := splitStringArg(config.DisallowedTools)
 
 	baseUrl, err := url.Parse(config.BaseURL)
 	if err != nil {
@@ -73,14 +83,16 @@ func GetMcpServerConfig() McpServerConfig {
 
 	// Build the complete server configuration
 	return McpServerConfig{
-		BaseURL:        *baseUrl,
-		OidcIssuerURL:  *oidcIssuerUrl,
-		OidcClientID:   config.OidcClientID,
-		Host:           &config.Host,
-		Port:           &port,
-		OutOfCluster:   &config.OutOfCluster,
-		Kubeconfig:     &config.Kubeconfig,
-		AllowedOrigins: allowedOrigins,
+		BaseURL:         *baseUrl,
+		OidcIssuerURL:   *oidcIssuerUrl,
+		OidcClientID:    config.OidcClientID,
+		Host:            &config.Host,
+		Port:            &port,
+		OutOfCluster:    &config.OutOfCluster,
+		Kubeconfig:      &config.Kubeconfig,
+		AllowedOrigins:  allowedOrigins,
+		AllowedTools:    allowedTools,
+		DisallowedTools: disallowedTools,
 	}
 }
 
