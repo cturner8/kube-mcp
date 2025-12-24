@@ -16,6 +16,10 @@ mcp:
     issuerUrl: ""
     # The ID of the OIDC client.
     clientId: ""
+    # The signing method for JWTs. Supported values are HS256 or RS256.
+    signingMethod: "RS256"
+    # Comma separated list of authentication scopes to require
+    scopes: "openid,mcp"
   # CORS allowed origins, comma separated.
   allowedOrigins: ""
   # Tool access configuration
