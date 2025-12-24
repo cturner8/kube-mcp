@@ -35,7 +35,6 @@ Common labels
 */}}
 {{- define "kube-mcp.labels" -}}
 helm.sh/chart: {{ include "kube-mcp.chart" . }}
-app: {{ include "kube-mcp.name" . }}
 {{ include "kube-mcp.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
