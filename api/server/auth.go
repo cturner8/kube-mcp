@@ -51,7 +51,7 @@ func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.Pro
 		// Optional: Authorization servers that can issue tokens for this resource
 		AuthorizationServers: []string{issuerURL},
 		// Optional: Human-readable name for the resource
-		ResourceName: "Kubernetes MCP Server",
+		ResourceName: "Kubernetes API MCP Server",
 		// Optional: Documentation URL for developers
 		ResourceDocumentation: "https://github.com/cturner8/kube-mcp",
 		// Optional: Scopes supported by this resource
