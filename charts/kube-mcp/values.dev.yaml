@@ -1,0 +1,12 @@
+mcp:
+  baseUrl: "http://localhost:9000"
+  oidc:
+    issuerUrl: "https://auth.kube.dev.cturner.xyz"
+    clientId: "10742d2e-1f00-4b19-8412-5a2f77b53b4d"
+  allowedOrigins: "http://localhost:6274"
+
+image:
+  tag: "dev"
+
+ingress:
+  enabled: true
