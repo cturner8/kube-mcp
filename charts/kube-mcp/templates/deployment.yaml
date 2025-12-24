@@ -60,9 +60,17 @@ spec:
             - name: KUBE_MCP_OIDC_CLIENT_ID
               value: {{ .Values.mcp.oidc.clientId | quote }}
             {{- end }}
+            {{- if .Values.mcp.oidc.signingMethod }}
+            - name: KUBE_MCP_OIDC_SIGNING_METHOD
+              value: {{ .Values.mcp.oidc.signingMethod | quote }}
+            {{- end }}
             {{- if .Values.mcp.allowedOrigins }}
             - name: KUBE_MCP_ALLOWED_ORIGINS
               value: {{ .Values.mcp.allowedOrigins | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.scopes }}
+            - name: KUBE_MCP_OIDC_SCOPES
+              value: {{ .Values.mcp.oidc.scopes | quote }}
             {{- end }}
             {{- if .Values.mcp.tools.allowed }}
             - name: KUBE_MCP_ALLOWED_TOOLS
