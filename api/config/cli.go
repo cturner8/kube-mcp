@@ -17,6 +17,8 @@ func getMcpServerCliFlags() McpServerUserConfig {
 		baseUrl         = flag.String("base-url", os.Getenv("KUBE_MCP_BASE_URL"), "Base URL the application will be accessed from")
 		oidcIssuerUrl   = flag.String("oidc-issuer-url", os.Getenv("KUBE_MCP_OIDC_ISSUER_URL"), "URL of the OIDC authentication provider")
 		oidcClientId    = flag.String("oidc-client-id", os.Getenv("KUBE_MCP_OIDC_CLIENT_ID"), "ID of the OIDC Client to authenticate against")
+		signingMethod   = flag.String("oidc-signing-method", os.Getenv("KUBE_MCP_OIDC_SIGNING_METHOD"), "Signing method for JWTs (HS256 or RS256)")
+		scopes          = flag.String("oidc-scopes", os.Getenv("KUBE_MCP_OIDC_SCOPES"), "(optional) comma-separated list of OIDC scopes to request during authentication")
 		allowedTools    = flag.String("allowed-tools", os.Getenv("KUBE_MCP_ALLOWED_TOOLS"), "(optional) comma-separated list of allowed tools")
 		disallowedTools = flag.String("disallowed-tools", os.Getenv("KUBE_MCP_DISALLOWED_TOOLS"), "(optional) comma-separated list of disallowed tools")
 	)
@@ -43,5 +45,7 @@ func getMcpServerCliFlags() McpServerUserConfig {
 		OidcClientID:    *oidcClientId,
 		AllowedTools:    *allowedTools,
 		DisallowedTools: *disallowedTools,
+		SigningMethod:   *signingMethod,
+		Scopes:          *scopes,
 	}
 }

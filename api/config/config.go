@@ -16,6 +16,8 @@ type McpServerConfig struct {
 	AllowedOrigins  []string
 	AllowedTools    []string
 	DisallowedTools []string
+	Scopes          []string
+	SigningMethod   string
 }
 
 type McpServerUserConfig struct {
@@ -29,6 +31,8 @@ type McpServerUserConfig struct {
 	AllowedOrigins  string
 	AllowedTools    string
 	DisallowedTools string
+	Scopes          string
+	SigningMethod   string
 }
 
 func parseServerUserConfig(config McpServerUserConfig) {
@@ -43,6 +47,10 @@ func parseServerUserConfig(config McpServerUserConfig) {
 	}
 	if config.AllowedTools != "" && config.DisallowedTools != "" {
 		panic("Cannot specify both allowed-tools and disallowed-tools")
+	}
+	// Validate signing method if provided
+	if config.SigningMethod != "HS256" && config.SigningMethod != "RS256" {
+		panic("Invalid signing method. Supported values are HS256 or RS256")
 	}
 }
 
@@ -65,6 +73,7 @@ func GetMcpServerConfig() McpServerConfig {
 	allowedOrigins := splitStringArg(config.AllowedOrigins)
 	allowedTools := splitStringArg(config.AllowedTools)
 	disallowedTools := splitStringArg(config.DisallowedTools)
+	scopes := splitStringArg(config.Scopes)
 
 	baseUrl, err := url.Parse(config.BaseURL)
 	if err != nil {
@@ -93,6 +102,8 @@ func GetMcpServerConfig() McpServerConfig {
 		AllowedOrigins:  allowedOrigins,
 		AllowedTools:    allowedTools,
 		DisallowedTools: disallowedTools,
+		SigningMethod:   config.SigningMethod,
+		Scopes:          scopes,
 	}
 }
 
