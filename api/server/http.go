@@ -47,7 +47,7 @@ func serve(handler *mcp.StreamableHTTPHandler) {
 	})
 	// Create a wrapper handler that routes to either the metadata endpoint or the MCP handler
 	// Apply CORS middleware to the metadata endpoint
-	metadataHandler := getProtectedResourceMetadataHandler(baseUrl)
+	metadataHandler := getProtectedResourceMetadataHandler()
 	http.HandleFunc(prmPath, corsMiddleware(metadataHandler).ServeHTTP)
 
 	// Register the authenticated MCP handler
