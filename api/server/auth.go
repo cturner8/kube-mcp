@@ -44,7 +44,12 @@ func getCustomClaims() validator.CustomClaims {
 
 // getProtectedResourceMetadata returns the OAuth2 Protected Resource Metadata
 // describing this server's capabilities and requirements.
-func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.ProtectedResourceMetadata {
+func getProtectedResourceMetadata() *oauthex.ProtectedResourceMetadata {
+	baseUrl := config.ServerConfig.BaseURL.String()
+	issuerURL := config.ServerConfig.OidcIssuerURL.String()
+	signingMethod := config.ServerConfig.SigningMethod
+	scopes := config.ServerConfig.Scopes
+
 	return &oauthex.ProtectedResourceMetadata{
 		// Required: The resource identifier for this server
 		Resource: baseUrl,
@@ -55,11 +60,11 @@ func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.Pro
 		// Optional: Documentation URL for developers
 		ResourceDocumentation: "https://github.com/cturner8/kube-mcp",
 		// Optional: Scopes supported by this resource
-		ScopesSupported: []string{"read", "write", "admin"},
+		ScopesSupported: scopes,
 		// Optional: Bearer token methods supported
 		BearerMethodsSupported: []string{"header"},
 		// Optional: JWS signing algorithms supported by the resource
-		ResourceSigningAlgValuesSupported: []string{"HS256", "RS256"},
+		ResourceSigningAlgValuesSupported: []string{signingMethod},
 		// Optional: Support for Authorization Details (RFC 9396)
 		AuthorizationDetailsTypesSupported: []string{},
 		// Optional: DPoP support
@@ -69,10 +74,16 @@ func getProtectedResourceMetadata(baseUrl string, issuerURL string) *oauthex.Pro
 
 func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Handler {
 	jwksProvider := jwks.NewCachingProvider(&config.ServerConfig.OidcIssuerURL, time.Minute*5) // Cache JWKS for 5 minutes
-	// Set up the validator.
+	// Determine signing method dynamically
+	signingMethod := config.ServerConfig.SigningMethod
+	signingValidator := validator.RS256
+	if strings.EqualFold(signingMethod, "HS256") {
+		signingValidator = validator.HS256
+	}
+	// Set up the validator using the chosen algorithm
 	jwtValidator, err := validator.New(
 		jwksProvider.KeyFunc,
-		validator.RS256,
+		signingValidator,
 		config.ServerConfig.OidcIssuerURL.String(),
 		[]string{config.ServerConfig.OidcClientID},
 		validator.WithCustomClaims(getCustomClaims),
@@ -82,8 +93,10 @@ func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Ha
 		panic("Error setting up JWT validator: " + err.Error())
 	}
 
+	scopes := config.ServerConfig.Scopes
+
 	authOptions := &auth.RequireBearerTokenOptions{
-		Scopes:              []string{}, // TODO: can a custom scope be used?
+		Scopes:              scopes,
 		ResourceMetadataURL: fmt.Sprintf("%s%s", baseUrl, prmPath),
 	}
 	return auth.RequireBearerToken(func(ctx context.Context, tokenString string, _ *http.Request) (*auth.TokenInfo, error) {
@@ -113,8 +126,8 @@ func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Ha
 
 // getProtectedResourceMetadataHandler returns the Protected Resource Metadata
 // as JSON. This endpoint is typically served at /.well-known/oauth-protected-resource
-func getProtectedResourceMetadataHandler(baseUrl string) http.HandlerFunc {
-	metadata := getProtectedResourceMetadata(baseUrl, config.ServerConfig.OidcIssuerURL.String())
+func getProtectedResourceMetadataHandler() http.HandlerFunc {
+	metadata := getProtectedResourceMetadata()
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
