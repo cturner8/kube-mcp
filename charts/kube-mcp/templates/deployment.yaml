@@ -44,6 +44,10 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
+            - name: KUBE_MCP_HOST
+              value: {{ .Values.mcp.host | quote }}
+            - name: KUBE_MCP_PORT
+              value: {{ .Values.service.port | quote }}
             {{- if .Values.mcp.baseUrl }}
             - name: KUBE_MCP_BASE_URL
               value: {{ .Values.mcp.baseUrl | quote }}
