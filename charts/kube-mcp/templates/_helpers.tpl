@@ -35,6 +35,7 @@ Common labels
 */}}
 {{- define "kube-mcp.labels" -}}
 helm.sh/chart: {{ include "kube-mcp.chart" . }}
+app: {{ include "kube-mcp.name" . }}
 {{ include "kube-mcp.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
@@ -46,6 +47,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "kube-mcp.selectorLabels" -}}
+app: {{ include "kube-mcp.name" . }}
 app.kubernetes.io/name: {{ include "kube-mcp.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
