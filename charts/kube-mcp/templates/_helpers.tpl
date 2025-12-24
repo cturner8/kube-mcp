@@ -61,3 +61,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the name of the RBAC resources to use
+*/}}
+{{- define "kube-mcp.rbacName" -}}
+{{- if .Values.rbac.create }}
+{{- default (include "kube-mcp.fullname" .) .Values.rbac.name }}
+{{- else }}
+{{- default "default" .Values.rbac.name }}
+{{- end }}
+{{- end }}
