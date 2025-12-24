@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "kube-mcp.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "kube-mcp.selectorLabels" . | nindent 6 }}
@@ -23,6 +21,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -44,6 +43,31 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            {{- if .Values.mcp.baseUrl }}
+            - name: KUBE_MCP_BASE_URL
+              value: {{ .Values.mcp.baseUrl | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.issuerUrl }}
+            - name: KUBE_MCP_OIDC_ISSUER_URL
+              value: {{ .Values.mcp.oidc.issuerUrl | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.clientId }}
+            - name: KUBE_MCP_OIDC_CLIENT_ID
+              value: {{ .Values.mcp.oidc.clientId | quote }}
+            {{- end }}
+            {{- if .Values.mcp.allowedOrigins }}
+            - name: KUBE_MCP_ALLOWED_ORIGINS
+              value: {{ .Values.mcp.allowedOrigins | quote }}
+            {{- end }}
+            {{- if .Values.mcp.tools.allowed }}
+            - name: KUBE_MCP_ALLOWED_TOOLS
+              value: {{ .Values.mcp.tools.allowed | quote }}
+            {{- end }}
+            {{- if .Values.mcp.tools.disallowed }}
+            - name: KUBE_MCP_DISALLOWED_TOOLS
+              value: {{ .Values.mcp.tools.disallowed | quote }}
+            {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
