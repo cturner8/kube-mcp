@@ -56,6 +56,42 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template.
   name: ""
 
+# Service account RBAC configuration more information can be found here: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+rbac:
+  # Specifies whether RBAC resources should be created.
+  create: true
+  # Annotations to add to the RBAC resources
+  annotations: {}
+  # The name of the RBAC resources to use.
+  # If not set and create is true, a name is generated using the fullname template.
+  name: ""
+  # The RBAC rules to apply to the created role.
+  # Should align with permissions required by allowed MCP tools
+  rules: 
+  - apiGroups: [""]
+    resources:
+    - pods
+    - services
+    - persistentvolumeclaims
+    - persistentvolumes
+    - nodes
+    - namespaces
+    verbs:
+    - get
+    - list
+  - apiGroups: ["apps"]
+    resources:
+    - deployments
+    verbs:
+    - get
+    - list
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+    - ingresses
+    verbs:
+    - get
+    - list
+
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 podAnnotations: {}
