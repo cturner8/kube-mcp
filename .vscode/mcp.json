@@ -5,7 +5,7 @@
       "type": "http"
     },
     "kube-mcp-dev": {
-      "url": "https://mcp.kube.dev.cturner.xyz/mcp",
+      "url": "https://mcp.kube.dev.cturner.xyz",
       "type": "http"
     }
   }
