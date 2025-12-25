@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -16,7 +16,7 @@ var ListPersistentVolumesTool = &mcp.Tool{
 }
 
 func ListPersistentVolumesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	pvs, err := kubernetesApiClient.CoreV1().PersistentVolumes().List(ctx, metav1.ListOptions{})
 	if err != nil {

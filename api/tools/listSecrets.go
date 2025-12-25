@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -20,7 +20,7 @@ type ListSecretsToolParams struct {
 }
 
 func ListSecretsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListSecretsToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	namespace := ""
 	if params.Namespace != nil {

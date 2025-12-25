@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -20,7 +20,7 @@ type ListPodsToolParams struct {
 }
 
 func ListPodsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListPodsToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	namespace := ""
 	if params.Namespace != nil {
@@ -29,11 +29,13 @@ func ListPodsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListP
 
 	pods, err := kubernetesApiClient.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
+		slog.Error("failed to list pods from Kubernetes API", "tool", req.Params.Name, "namespace", namespace, "error", err)
 		return nil, nil, err
 	}
 
 	podsJson, err := json.Marshal(pods)
 	if err != nil {
+		slog.Error("failed to marshal pods list", "namespace", namespace, "error", err)
 		return nil, nil, err
 	}
 

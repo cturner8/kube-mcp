@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -21,7 +21,7 @@ type GetPersistentVolumeClaimToolParams struct {
 }
 
 func GetPersistentVolumeClaimHandler(ctx context.Context, req *mcp.CallToolRequest, params GetPersistentVolumeClaimToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	pvc, err := kubernetesApiClient.CoreV1().PersistentVolumeClaims(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {

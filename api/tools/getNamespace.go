@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -20,7 +20,7 @@ type GetNamespaceToolParams struct {
 }
 
 func GetNamespaceHandler(ctx context.Context, req *mcp.CallToolRequest, params GetNamespaceToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	namespace, err := kubernetesApiClient.CoreV1().Namespaces().Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {

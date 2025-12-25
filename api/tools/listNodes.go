@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -16,7 +16,7 @@ var ListNodesTool = &mcp.Tool{
 }
 
 func ListNodesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	nodes, err := kubernetesApiClient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {

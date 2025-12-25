@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -20,7 +20,7 @@ type GetNodeToolParams struct {
 }
 
 func GetNodeHandler(ctx context.Context, req *mcp.CallToolRequest, params GetNodeToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	node, err := kubernetesApiClient.CoreV1().Nodes().Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {

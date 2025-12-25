@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -21,7 +21,7 @@ type GetSecretToolParams struct {
 }
 
 func GetSecretHandler(ctx context.Context, req *mcp.CallToolRequest, params GetSecretToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	secret, err := kubernetesApiClient.CoreV1().Secrets(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {

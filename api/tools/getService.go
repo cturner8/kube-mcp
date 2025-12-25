@@ -3,7 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -21,7 +21,7 @@ type GetServiceToolParams struct {
 }
 
 func GetServiceHandler(ctx context.Context, req *mcp.CallToolRequest, params GetServiceToolParams) (*mcp.CallToolResult, any, error) {
-	log.Printf("Invoking '%s' tool", req.Params.Name)
+	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
 	service, err := kubernetesApiClient.CoreV1().Services(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
