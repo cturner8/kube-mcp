@@ -7,8 +7,9 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/cturner8/kube-mcp/config"
@@ -53,11 +54,12 @@ func serve(handler *mcp.StreamableHTTPHandler) {
 	// Register the authenticated MCP handler
 	http.HandleFunc("/", authenticatedHandler.ServeHTTP)
 
-	log.Printf("MCP server listening on %s", httpUrl)
-	log.Printf("Protected Resource Metadata available at %s%s", baseUrl, prmPath)
+	slog.Info("MCP server listening", "address", httpUrl)
+	slog.Debug("Protected Resource Metadata available", "url", fmt.Sprintf("%s%s", baseUrl, prmPath))
 
 	// Start the HTTP server.
 	if err := http.ListenAndServe(httpUrl, nil); err != nil {
-		log.Fatalf("Server failed: %v", err)
+		slog.Error("HTTP server failed", "error", err)
+		os.Exit(1)
 	}
 }

@@ -5,7 +5,7 @@
 package server
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -132,7 +132,7 @@ func StartServer() {
 		activeTools = append(activeTools, tools.GetSecretTool.Name)
 	}
 
-	log.Printf("%d tool(s) active", len(activeTools))
+	slog.Info("Active tools", "count", len(activeTools))
 
 	// Create the streamable HTTP handler.
 	handler := mcp.NewStreamableHTTPHandler(func(req *http.Request) *mcp.Server {

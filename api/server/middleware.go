@@ -6,7 +6,7 @@ package server
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -26,9 +26,9 @@ func createLoggingMiddleware() mcp.Middleware {
 			sessionID := req.GetSession().ID()
 
 			// Log request details.
-			log.Printf("[REQUEST] Session: %s | Method: %s",
-				sessionID,
-				method)
+			slog.Debug("MCP request received",
+				"session", sessionID,
+				"method", method)
 
 			// Call the actual handler.
 			result, err := next(ctx, method, req)
@@ -37,16 +37,16 @@ func createLoggingMiddleware() mcp.Middleware {
 			duration := time.Since(start)
 
 			if err != nil {
-				log.Printf("[RESPONSE] Session: %s | Method: %s | Status: ERROR | Duration: %v | Error: %v",
-					sessionID,
-					method,
-					duration,
-					err)
+				slog.Error("MCP request error",
+					"session", sessionID,
+					"method", method,
+					"duration", duration,
+					"error", err)
 			} else {
-				log.Printf("[RESPONSE] Session: %s | Method: %s | Status: OK | Duration: %v",
-					sessionID,
-					method,
-					duration)
+				slog.Debug("MCP request completed",
+					"session", sessionID,
+					"method", method,
+					"duration", duration)
 			}
 
 			return result, err
@@ -74,16 +74,16 @@ func createCORSMiddleware(allowedOrigins []string) func(http.Handler) http.Handl
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// If there are no allowed origins, skip CORS
 			if len(allowedOrigins) == 0 {
-				log.Printf("No allowed origins configured, skipping CORS headers")
+				slog.Debug("No allowed origins configured, skipping CORS headers")
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			log.Printf("Attempting to apply CORS headers")
+			slog.Debug("Attempting to apply CORS headers")
 
 			origin := r.Header.Get("Origin")
 			if origin != "" && isOriginAllowed(origin, allowedOrigins) {
-				log.Printf("Applying CORS headers for origin: %s\n", origin)
+				slog.Debug("Applying CORS headers for origin", "origin", origin)
 
 				w.Header().Set("Access-Control-Allow-Origin", origin)
 				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -97,7 +97,7 @@ func createCORSMiddleware(allowedOrigins []string) func(http.Handler) http.Handl
 				return
 			}
 
-			log.Printf("CORS origin check complete")
+			slog.Debug("CORS origin check complete")
 
 			next.ServeHTTP(w, r)
 		})
