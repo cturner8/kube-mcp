@@ -3,4 +3,7 @@
 Work in progress documentation for the Kubernetes API MCP server.
 
 Navigation:
-- [development](./development.md)
+- [Deployment Guide](./deployment.md)
+- [Configuration Options](./configuration.md)
+- [Authentication/Authorisation](./authentication.md)
+- [Development Guide](./development.md)

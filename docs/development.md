@@ -1,12 +1,12 @@
-## Development
+# Development Guide
 
-### Create a Minikube cluster
+## Create a Minikube cluster
 
 ```sh
 minikube start --addons=dashboard,metrics-server
 ```
 
-### Access Kubernetes Dashboard
+## Access Kubernetes Dashboard
 
 ```sh
 minikube dashboard --port 8000
@@ -14,7 +14,7 @@ minikube dashboard --port 8000
 
 This will allow access to the Kubernetes Dashboard app as well as the Kubernetes API itself.
 
-### Run the MCP API
+## Run the MCP API
 
 ```sh
 # Switch to the API directory
@@ -36,7 +36,7 @@ go run . --out-of-cluster
 go run . --allowed-origins http://localhost:6274
 ```
 
-### Start the inspector
+## Start the inspector
 
 Start the MCP inspector using npm:
 
@@ -47,3 +47,24 @@ MCP_AUTO_OPEN_ENABLED=false npx @modelcontextprotocol/inspector --transport http
 ```
 
 Once the inspector opens, ensure the "HTTP" transport is selected and Connection Type is "Via Proxy".
+
+
+## Helm chart development
+
+For helm chart development, run a helm install pointing to the local chart directory:
+
+```sh
+helm install kube-mcp charts/kube-mcp
+```
+
+To override the default `values.yaml`, either:
+- create a `values.dev.yaml` within `charts/kube-mcp` (additional `values.*.yaml` files are ignored by git)
+- override using `--set` flags (more limited than using the values file)
+
+For example:
+
+```sh
+helm install kube-mcp charts/kube-mcp \
+    --values charts/kube-mcp/values.dev.yaml \
+    --set ingress.enabled=true
+```
