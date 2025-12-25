@@ -1,7 +1,9 @@
 package config
 
 import (
+	"log/slog"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -18,6 +20,7 @@ type McpServerConfig struct {
 	DisallowedTools []string
 	Scopes          []string
 	SigningMethod   string
+	LogLevel        string
 }
 
 type McpServerUserConfig struct {
@@ -33,24 +36,30 @@ type McpServerUserConfig struct {
 	DisallowedTools string
 	Scopes          string
 	SigningMethod   string
+	LogLevel        string
 }
 
 func parseServerUserConfig(config McpServerUserConfig) {
 	if config.BaseURL == "" {
-		panic("Base URL is required")
+		slog.Error("Base URL is required")
+		os.Exit(1)
 	}
 	if config.OidcIssuerURL == "" {
-		panic("OIDC Issuer URL is required")
+		slog.Error("OIDC Issuer URL is required")
+		os.Exit(1)
 	}
 	if config.OidcClientID == "" {
-		panic("OIDC Client ID is required")
+		slog.Error("OIDC Client ID is required")
+		os.Exit(1)
 	}
 	if config.AllowedTools != "" && config.DisallowedTools != "" {
-		panic("Cannot specify both allowed-tools and disallowed-tools")
+		slog.Error("Cannot specify both allowed-tools and disallowed-tools")
+		os.Exit(1)
 	}
 	// Validate signing method if provided
 	if config.SigningMethod != "HS256" && config.SigningMethod != "RS256" {
-		panic("Invalid signing method. Supported values are HS256 or RS256")
+		slog.Error("Invalid signing method. Supported values are HS256 or RS256", "provided", config.SigningMethod)
+		os.Exit(1)
 	}
 }
 
@@ -77,12 +86,14 @@ func GetMcpServerConfig() McpServerConfig {
 
 	baseUrl, err := url.Parse(config.BaseURL)
 	if err != nil {
-		panic("Unable to parse Base URL")
+		slog.Error("Unable to parse Base URL", "error", err)
+		os.Exit(1)
 	}
 
 	oidcIssuerUrl, err := url.Parse(config.OidcIssuerURL)
 	if err != nil {
-		panic("Unable to parse OIDC Issuer URL")
+		slog.Error("Unable to parse OIDC Issuer URL", "error", err)
+		os.Exit(1)
 	}
 
 	port := config.Port
