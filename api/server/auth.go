@@ -9,7 +9,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -74,12 +76,7 @@ func getProtectedResourceMetadata() *oauthex.ProtectedResourceMetadata {
 
 func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Handler {
 	jwksProvider := jwks.NewCachingProvider(&config.ServerConfig.OidcIssuerURL, time.Minute*5) // Cache JWKS for 5 minutes
-	// Determine signing method dynamically
-	signingMethod := config.ServerConfig.SigningMethod
-	signingValidator := validator.RS256
-	if strings.EqualFold(signingMethod, "HS256") {
-		signingValidator = validator.HS256
-	}
+	signingValidator := getSigningValidator()
 	// Set up the validator using the chosen algorithm
 	jwtValidator, err := validator.New(
 		jwksProvider.KeyFunc,
@@ -90,13 +87,12 @@ func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Ha
 		validator.WithAllowedClockSkew(30*time.Second),
 	)
 	if err != nil {
-		panic("Error setting up JWT validator: " + err.Error())
+		slog.Error("Error setting up JWT validator", "error", err)
+		os.Exit(1)
 	}
 
-	scopes := config.ServerConfig.Scopes
-
 	authOptions := &auth.RequireBearerTokenOptions{
-		Scopes:              scopes,
+		Scopes:              []string{}, // TODO: extract scopes from token (if present)
 		ResourceMetadataURL: fmt.Sprintf("%s%s", baseUrl, prmPath),
 	}
 	return auth.RequireBearerToken(func(ctx context.Context, tokenString string, _ *http.Request) (*auth.TokenInfo, error) {
@@ -124,6 +120,19 @@ func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Ha
 	}, authOptions)
 }
 
+func getSigningValidator() validator.SignatureAlgorithm {
+	signingMethod := config.ServerConfig.SigningMethod
+	switch strings.ToUpper(signingMethod) {
+	case "HS256":
+		return validator.HS256
+	case "RS256":
+		return validator.RS256
+	default:
+		slog.Warn("Unknown signing method specified, defaulting to RS256", "signingMethod", signingMethod)
+		return validator.RS256
+	}
+}
+
 // getProtectedResourceMetadataHandler returns the Protected Resource Metadata
 // as JSON. This endpoint is typically served at /.well-known/oauth-protected-resource
 func getProtectedResourceMetadataHandler() http.HandlerFunc {
@@ -137,6 +146,7 @@ func getProtectedResourceMetadataHandler() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(metadata); err != nil {
+			slog.Error("Failed to encode protected resource metadata", "error", err)
 			http.Error(w, "Failed to encode metadata", http.StatusInternalServerError)
 		}
 	}
