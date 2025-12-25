@@ -29,7 +29,7 @@ export KUBE_MCP_BASE_URL=""
 ## URL of your OIDC Issuer. For local dev, can be https://auth.localhost:8443
 export KUBE_MCP_OIDC_ISSUER_URL=""
 ## Client ID of your Kube MCP OAuth Client 
-export OIDC_CLIENT_ID=""
+export KUBE_MCP_OIDC_CLIENT_ID=""
 # or provide required config as cli flag
 go run . --base-url "" --oidc-issuer-url "" --oidc-client-id ""
 # Start the server in out of cluster mode
