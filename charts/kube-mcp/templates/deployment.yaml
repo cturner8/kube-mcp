@@ -80,6 +80,8 @@ spec:
             - name: KUBE_MCP_DISALLOWED_TOOLS
               value: {{ .Values.mcp.tools.disallowed | quote }}
             {{- end }}
+            - name: KUBE_MCP_LOG_LEVEL
+              value: {{ .Values.mcp.logging.level | default "error" | quote }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
