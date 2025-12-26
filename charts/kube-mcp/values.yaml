@@ -84,6 +84,7 @@ rbac:
     - persistentvolumes
     - nodes
     - namespaces
+    - events
     verbs:
     - get
     - list
