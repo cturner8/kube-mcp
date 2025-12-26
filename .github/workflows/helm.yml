@@ -34,9 +34,7 @@ jobs:
 
       - name: Package helm chart
         id: package
-        env:
-          VERSION: ${{ github.ref_name | sed 's/^chart-v//' }}
-        run: helm package charts/kube-mcp --version ${VERSION}
+        run: helm package charts/kube-mcp
 
       - name: Push helm chart
         id: push 
