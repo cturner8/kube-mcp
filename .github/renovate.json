@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "addLabels": ["maintenance", "{{categories}}", "{{depType}}", "{{manager}}"],
+  "assignees": ["cturner8"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update VERSION variables in Dockerfiles",
+      "managerFilePatterns": [
+        "/(^|/|\\.)Dockerfile$/",
+        "/(^|/)Dockerfile\\.[^/]*$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+?)(?: depName=(?<depName>.+?))? packageName=(?<packageName>.+?)(?: versioning=(?<versioning>[a-z-]+?))?\\s(?:ENV|ARG) .+?_VERSION=(?<currentValue>.+?)\\s"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Update Helm chart appVersion in Chart.yaml",
+      "datasourceTemplate": "docker",
+      "managerFilePatterns": ["/(^|/)Chart\\.yaml$/"],
+      "matchStrings": [
+        "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\'?(?<currentValue>[\\w+\\.\\-]*)'"
+      ]
+    }
+  ]
+}
