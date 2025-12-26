@@ -6,12 +6,9 @@ env:
 
 on:
   workflow_dispatch: {}
-  # TODO: reinstate once merged to main
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - "charts/kube-mcp/Chart.yaml"
+  push:
+    tags:
+      - 'chart-v*'
 
 jobs:
   build:
@@ -37,7 +34,9 @@ jobs:
 
       - name: Package helm chart
         id: package
-        run: helm package charts/kube-mcp
+        env:
+          VERSION: ${{ github.ref_name | sed 's/^chart-v//' }}
+        run: helm package charts/kube-mcp --version ${VERSION}
 
       - name: Push helm chart
         id: push 
