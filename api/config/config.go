@@ -56,11 +56,6 @@ func parseServerUserConfig(config McpServerUserConfig) {
 		slog.Error("Cannot specify both allowed-tools and disallowed-tools")
 		os.Exit(1)
 	}
-	// Validate signing method if provided
-	if config.SigningMethod != "HS256" && config.SigningMethod != "RS256" {
-		slog.Error("Invalid signing method. Supported values are HS256 or RS256", "provided", config.SigningMethod)
-		os.Exit(1)
-	}
 }
 
 func splitStringArg(input string) []string {
@@ -83,6 +78,10 @@ func GetMcpServerConfig() McpServerConfig {
 	allowedTools := splitStringArg(config.AllowedTools)
 	disallowedTools := splitStringArg(config.DisallowedTools)
 	scopes := splitStringArg(config.Scopes)
+
+	if len(scopes) == 0 {
+		scopes = []string{"openid"}
+	}
 
 	baseUrl, err := url.Parse(config.BaseURL)
 	if err != nil {
