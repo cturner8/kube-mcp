@@ -1,0 +1,15 @@
+---
+namespace: kube-system
+
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+
+secretGenerator:
+  - name: traefik-acme-credentials
+    envs:
+      - secrets/.env.cloudflare
+
+resources:
+  - config.yml

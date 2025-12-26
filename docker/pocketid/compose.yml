@@ -1,0 +1,66 @@
+name: "pocketid"
+
+services:
+  auth:
+    image: ghcr.io/pocket-id/pocket-id:v1
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.auth.rule=Host(`auth.localhost`)
+      - traefik.http.services.auth.loadbalancer.server.port=1411
+    environment:
+      APP_URL: https://auth.localhost:8443
+      TRUST_PROXY: true
+    volumes:
+      - auth_data:/app/data
+    networks:
+      - internal
+
+  proxy:
+    image: ghcr.io/traefik/traefik:v3
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    command: [
+      --providers.file.directory=/etc/traefik/conf,
+      --providers.file.watch=true,
+      --providers.docker=true,
+      --providers.docker.exposedByDefault=false,
+      --entrypoints.web.address=:8080,
+      --entrypoints.web.http.redirections.entryPoint.to=websecure,
+      --entrypoints.web.http.redirections.entryPoint.scheme=https,
+      --entrypoints.web.http.redirections.entryPoint.permanent=true,
+      --entrypoints.websecure.address=:8443,
+      --entryPoints.websecure.http.tls=true,
+      --entryPoints.websecure.asDefault=true,
+    ]
+    ports:
+      - 8080:8080
+      - 8443:8443
+    use_api_socket: true
+    networks:
+      - internal
+    volumes:
+      - acme_data:/etc/traefik/acme
+    configs:
+      - source: traefik_config
+        target: /etc/traefik/conf/traefik.yml
+      - source: traefik_cert
+        target: /etc/traefik/tls/localhost.pem
+      - source: traefik_cert_key
+        target: /etc/traefik/tls/localhost-key.pem
+
+volumes:
+  auth_data: {}
+  acme_data: {}
+
+networks:
+  internal: {}
+
+configs:
+  traefik_config:
+    file: ./traefik.config.yml
+  traefik_cert:
+    file: ./certs/auth.localhost.pem
+  traefik_cert_key:
+    file: ./certs/auth.localhost-key.pem

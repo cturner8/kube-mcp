@@ -1,4 +1,4 @@
-name: docker-build
+name: build
 
 env:
   REGISTRY: ghcr.io
@@ -6,6 +6,7 @@ env:
 
 on:
   workflow_dispatch: {}
+  # TODO: reinstate once merged to main
   # push:
   #   branches:
   #     - main
@@ -53,8 +54,10 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v6.18.0
         with:
-          file: api/Dockerfile
-          platforms: linux/arm64,linux/amd64
+          context: api
+          platforms: linux/amd64
+          # TODO: reinstate multi-arch build once merged to main
+          # platforms: linux/arm64,linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

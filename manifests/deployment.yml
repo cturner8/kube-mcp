@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-mcp
+  template:
+    metadata:
+      labels:
+        app: kube-mcp
+        app.kubernetes.io/name: kube-mcp
+    spec:
+      automountServiceAccountToken: true
+      serviceAccountName: kube-mcp
+      imagePullSecrets:
+        - name: ghcr-dev
+      containers:
+        - name: kube-mcp
+          image: ghcr.io/cturner8/kube-mcp:dev
+          env:
+            - name: KUBE_MCP_BASE_URL
+              value: "https://mcp.kube.dev.cturner.xyz"
+            - name: KUBE_MCP_OIDC_ISSUER_URL
+              value: "https://auth.kube.dev.cturner.xyz"
+            - name: KUBE_MCP_OIDC_CLIENT_ID
+              value: "10742d2e-1f00-4b19-8412-5a2f77b53b4d"
+          args: [
+            "--allowed-origins",
+            "http://localhost:6274"
+          ]
+          ports:
+            - containerPort: 9000
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "125m"
+              memory: "128Mi"

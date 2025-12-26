@@ -1,0 +1,94 @@
+# A development deployment of PocketID for MCP integration.
+# Not intended for production use.
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pocketid-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pocketid
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pocketid
+  template:
+    metadata:
+      labels:
+        app: pocketid
+        app.kubernetes.io/name: pocketid
+    spec:
+      containers:
+        - name: pocketid
+          image: ghcr.io/pocket-id/pocket-id:v1
+          env:
+            - name: APP_URL
+              value: https://auth.kube.dev.cturner.xyz
+            - name: TRUST_PROXY
+              value: "true"
+          ports:
+            - containerPort: 1411
+          livenessProbe:
+            tcpSocket:
+              port: 1411
+            initialDelaySeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 1411
+            initialDelaySeconds: 10
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "125m"
+              memory: "128Mi"
+          volumeMounts:
+            - mountPath: /app/data
+              name: pocketid-data
+      volumes:
+        - name: pocketid-data
+          persistentVolumeClaim:
+            claimName: pocketid-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pocketid
+spec:
+  type: ClusterIP
+  ports:
+    - port: 1411
+      targetPort: 1411
+      name: http
+  selector:
+    app: pocketid
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pocketid
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+    - host: auth.kube.dev.cturner.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pocketid
+                port:
+                  number: 1411

@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-mcp.fullname" . }}
+  labels:
+    {{- include "kube-mcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kube-mcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kube-mcp.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kube-mcp.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: KUBE_MCP_HOST
+              value: {{ .Values.mcp.host | quote }}
+            - name: KUBE_MCP_PORT
+              value: {{ .Values.service.port | quote }}
+            {{- if .Values.mcp.baseUrl }}
+            - name: KUBE_MCP_BASE_URL
+              value: {{ .Values.mcp.baseUrl | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.issuerUrl }}
+            - name: KUBE_MCP_OIDC_ISSUER_URL
+              value: {{ .Values.mcp.oidc.issuerUrl | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.clientId }}
+            - name: KUBE_MCP_OIDC_CLIENT_ID
+              value: {{ .Values.mcp.oidc.clientId | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.signingMethod }}
+            - name: KUBE_MCP_OIDC_SIGNING_METHOD
+              value: {{ .Values.mcp.oidc.signingMethod | quote }}
+            {{- end }}
+            {{- if .Values.mcp.allowedOrigins }}
+            - name: KUBE_MCP_ALLOWED_ORIGINS
+              value: {{ .Values.mcp.allowedOrigins | quote }}
+            {{- end }}
+            {{- if .Values.mcp.oidc.scopes }}
+            - name: KUBE_MCP_OIDC_SCOPES
+              value: {{ .Values.mcp.oidc.scopes | quote }}
+            {{- end }}
+            {{- if .Values.mcp.tools.allowed }}
+            - name: KUBE_MCP_ALLOWED_TOOLS
+              value: {{ .Values.mcp.tools.allowed | quote }}
+            {{- end }}
+            {{- if .Values.mcp.tools.disallowed }}
+            - name: KUBE_MCP_DISALLOWED_TOOLS
+              value: {{ .Values.mcp.tools.disallowed | quote }}
+            {{- end }}
+            - name: KUBE_MCP_LOG_LEVEL
+              value: {{ .Values.mcp.logging.level | default "error" | quote }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

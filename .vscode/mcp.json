@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "kube-mcp-local": {
+      "url": "http://localhost:9000",
+      "type": "http"
+    },
+    "kube-mcp-dev": {
+      "url": "https://mcp.kube.dev.cturner.xyz",
+      "type": "http"
+    }
+  }
+}
