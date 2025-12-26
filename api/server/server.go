@@ -112,6 +112,12 @@ func StartServer() {
 		activeTools = append(activeTools, tools.GetPodTool.Name)
 	}
 
+	// Events
+	if tools.IsToolAllowed(tools.ListEventsTool.Name) {
+		mcp.AddTool(server, tools.ListEventsTool, tools.ListEventsHandler)
+		activeTools = append(activeTools, tools.ListEventsTool.Name)
+	}
+
 	// ConfigMaps
 	if tools.IsToolAllowed(tools.ListConfigMapsTool.Name) {
 		mcp.AddTool(server, tools.ListConfigMapsTool, tools.ListConfigMapsHandler)
