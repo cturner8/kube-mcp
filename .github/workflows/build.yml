@@ -17,6 +17,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
 
     steps:
       - name: Checkout repository
@@ -68,3 +69,12 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      - name: Generate image attestation
+        uses: actions/attest-build-provenance@v3.1.0
+        env:
+          SUBJECT: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        with:
+          subject-name: ${{ env.SUBJECT }}
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+          push-to-registry: true
