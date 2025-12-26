@@ -20,6 +20,7 @@ changelog:
     - title: Maintenance 🧹
       labels:
         - maintenance
+        - dependencies
     - title: Misc. Changes
       labels:
         - "*"
