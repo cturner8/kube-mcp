@@ -6,12 +6,9 @@ env:
 
 on:
   workflow_dispatch: {}
-  # TODO: reinstate once merged to main
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - "api/Dockerfile"
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -49,15 +46,14 @@ jobs:
             latest=true
           tags: |
             type=ref,event=branch
+            type=semver,pattern={{version}}
 
       - name: Build and Push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6.18.0
         with:
           context: api
-          platforms: linux/amd64
-          # TODO: reinstate multi-arch build once merged to main
-          # platforms: linux/arm64,linux/amd64
+          platforms: linux/arm64,linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
