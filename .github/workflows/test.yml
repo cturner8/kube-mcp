@@ -9,6 +9,12 @@ jobs:
     steps:
     - uses: actions/checkout@v6.0.1
 
+    - name: Create Kind Cluster
+      uses: helm/kind-action@v1.13.0
+      with:
+        cluster-name: kube-mcp
+        kubeconfig: ${{ runner.temp }}/kubeconfig
+
     - name: Set up Go
       uses: actions/setup-go@v6.1.0
       with:
@@ -16,10 +22,10 @@ jobs:
         cache: true
         cache-dependency-path: "api/go.sum"
 
-    - name: build
+    - name: Build API
       working-directory: api
       run: go build -v ./...
 
-    - name: test
+    - name: Run Tests
       working-directory: api
       run: go test -v ./...
