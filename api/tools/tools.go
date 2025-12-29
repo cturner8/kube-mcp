@@ -2,6 +2,7 @@ package tools
 
 import (
 	"slices"
+	"sync"
 
 	"github.com/cturner8/kube-mcp/config"
 	"github.com/cturner8/kube-mcp/kubernetes"
@@ -9,7 +10,20 @@ import (
 	k8s "k8s.io/client-go/kubernetes"
 )
 
-var kubernetesApiClient *k8s.Clientset = kubernetes.CreateKubernetesApiClient(*config.ServerConfig.OutOfCluster, *config.ServerConfig.Kubeconfig)
+var (
+	kubeClientOnce      sync.Once
+	kubernetesApiClient *k8s.Clientset
+)
+
+func getKubernetesApiClient() *k8s.Clientset {
+	kubeClientOnce.Do(func() {
+		config.Load()
+		cfg := config.GetMcpServerConfig()
+		kubernetesApiClient = kubernetes.CreateKubernetesApiClient(*cfg.OutOfCluster, *cfg.Kubeconfig)
+	})
+
+	return kubernetesApiClient
+}
 
 func IsToolAllowed(toolName string) bool {
 	allowedTools := config.ServerConfig.AllowedTools
