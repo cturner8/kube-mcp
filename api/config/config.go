@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 )
 
 type McpServerConfig struct {
@@ -69,7 +70,26 @@ func splitStringArg(input string) []string {
 	return output
 }
 
+var (
+	loadOnce     sync.Once
+	ServerConfig McpServerConfig
+)
+
+// Load parses flags/environment once and populates ServerConfig.
+// Safe for concurrent callers.
+func Load() {
+	loadOnce.Do(func() {
+		ServerConfig = buildMcpServerConfig()
+	})
+}
+
+// GetMcpServerConfig returns the loaded config
 func GetMcpServerConfig() McpServerConfig {
+	Load()
+	return ServerConfig
+}
+
+func buildMcpServerConfig() McpServerConfig {
 	// Parse CLI flag configuration
 	config := getMcpServerCliFlags()
 	parseServerUserConfig(config)
@@ -116,5 +136,3 @@ func GetMcpServerConfig() McpServerConfig {
 		Scopes:          scopes,
 	}
 }
-
-var ServerConfig McpServerConfig = GetMcpServerConfig()

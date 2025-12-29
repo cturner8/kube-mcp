@@ -12,7 +12,7 @@ func getMcpServerCliFlags() McpServerUserConfig {
 	var (
 		host            = flag.String("host", os.Getenv("KUBE_MCP_HOST"), "host to connect to/listen on")
 		port            = flag.String("port", os.Getenv("KUBE_MCP_PORT"), "port number to connect to/listen on")
-		outOfCluster    = flag.Bool("out-of-cluster", false, "(optional) indicates the server is running outside of a Kubernetes cluster and should look for a kubeconfig file")
+		outOfCluster    = flag.Bool("out-of-cluster", os.Getenv("KUBE_MCP_OUT_OF_CLUSTER") == "true", "(optional) indicates the server is running outside of a Kubernetes cluster and should look for a kubeconfig file")
 		allowedOrigins  = flag.String("allowed-origins", os.Getenv("KUBE_MCP_ALLOWED_ORIGINS"), "(optional) comma-separated list of allowed CORS origins")
 		baseUrl         = flag.String("base-url", os.Getenv("KUBE_MCP_BASE_URL"), "Base URL the application will be accessed from")
 		oidcIssuerUrl   = flag.String("oidc-issuer-url", os.Getenv("KUBE_MCP_OIDC_ISSUER_URL"), "URL of the OIDC authentication provider")
@@ -32,8 +32,10 @@ func getMcpServerCliFlags() McpServerUserConfig {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
 
-	// Parse command-line flags.
-	flag.Parse()
+	// Parse command-line flags if not already loaded
+	if !flag.CommandLine.Parsed() {
+		flag.Parse()
+	}
 
 	return McpServerUserConfig{
 		Host:            *host,
