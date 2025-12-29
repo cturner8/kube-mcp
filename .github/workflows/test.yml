@@ -12,8 +12,8 @@ jobs:
     - name: Create Kind Cluster
       uses: helm/kind-action@v1.13.0
       with:
-        cluster-name: kube-mcp
-        kubeconfig: ${{ runner.temp }}/kubeconfig
+        cluster_name: kube-mcp
+        kubeconfig: /home/runner/.kube/config
 
     - name: Set up Go
       uses: actions/setup-go@v6.1.0
