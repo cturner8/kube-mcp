@@ -14,7 +14,7 @@ import (
 	tools "github.com/cturner8/kube-mcp/tools"
 )
 
-func StartServer() {
+func buildServer() (*mcp.StreamableHTTPHandler, []string) {
 	// Ensure configuration is loaded before building the server.
 	config.Load()
 
@@ -149,6 +149,11 @@ func StartServer() {
 		return server
 	}, nil)
 
+	return handler, activeTools
+}
+
+func StartServer() {
+	handler, _ := buildServer()
 	// Start serving
 	serve(handler)
 }
