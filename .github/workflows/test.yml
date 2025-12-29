@@ -1,0 +1,23 @@
+name: test
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6.0.1
+
+    - name: Set up Go
+      uses: actions/setup-go@v6.1.0
+      with:
+        go-version-file: "api/go.mod"
+        cache: true
+        cache-dependency-path: "api/go.sum"
+
+    - name: build
+      run: go build -v ./...
+
+    - name: test
+      run: go test -v ./...
