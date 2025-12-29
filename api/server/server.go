@@ -10,10 +10,14 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
+	"github.com/cturner8/kube-mcp/config"
 	tools "github.com/cturner8/kube-mcp/tools"
 )
 
 func StartServer() {
+	// Ensure configuration is loaded before building the server.
+	config.Load()
+
 	// Create an MCP server.
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "kube-mcp",
