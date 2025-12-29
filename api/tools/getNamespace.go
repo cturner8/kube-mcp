@@ -22,7 +22,7 @@ type GetNamespaceToolParams struct {
 func GetNamespaceHandler(ctx context.Context, req *mcp.CallToolRequest, params GetNamespaceToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	namespace, err := kubernetesApiClient.CoreV1().Namespaces().Get(ctx, params.Name, metav1.GetOptions{})
+	namespace, err := getKubernetesApiClient().CoreV1().Namespaces().Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

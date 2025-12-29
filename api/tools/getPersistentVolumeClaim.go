@@ -23,7 +23,7 @@ type GetPersistentVolumeClaimToolParams struct {
 func GetPersistentVolumeClaimHandler(ctx context.Context, req *mcp.CallToolRequest, params GetPersistentVolumeClaimToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	pvc, err := kubernetesApiClient.CoreV1().PersistentVolumeClaims(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	pvc, err := getKubernetesApiClient().CoreV1().PersistentVolumeClaims(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

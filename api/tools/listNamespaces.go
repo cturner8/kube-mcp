@@ -18,7 +18,7 @@ var ListNamespacesTool = &mcp.Tool{
 func ListNamespacesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	namespaces, err := kubernetesApiClient.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+	namespaces, err := getKubernetesApiClient().CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

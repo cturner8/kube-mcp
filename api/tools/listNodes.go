@@ -18,7 +18,7 @@ var ListNodesTool = &mcp.Tool{
 func ListNodesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	nodes, err := kubernetesApiClient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
+	nodes, err := getKubernetesApiClient().CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

@@ -23,7 +23,7 @@ type GetConfigMapToolParams struct {
 func GetConfigMapHandler(ctx context.Context, req *mcp.CallToolRequest, params GetConfigMapToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	cm, err := kubernetesApiClient.CoreV1().ConfigMaps(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	cm, err := getKubernetesApiClient().CoreV1().ConfigMaps(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

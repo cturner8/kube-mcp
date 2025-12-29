@@ -18,7 +18,7 @@ var ListPersistentVolumesTool = &mcp.Tool{
 func ListPersistentVolumesHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	pvs, err := kubernetesApiClient.CoreV1().PersistentVolumes().List(ctx, metav1.ListOptions{})
+	pvs, err := getKubernetesApiClient().CoreV1().PersistentVolumes().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

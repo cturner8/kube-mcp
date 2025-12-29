@@ -27,7 +27,7 @@ func ListEventsHandler(ctx context.Context, req *mcp.CallToolRequest, params Lis
 		namespace = *params.Namespace
 	}
 
-	events, err := kubernetesApiClient.CoreV1().Events(namespace).List(ctx, metav1.ListOptions{})
+	events, err := getKubernetesApiClient().CoreV1().Events(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		slog.Error("Failed to list events from Kubernetes API", "tool", req.Params.Name, "namespace", namespace, "error", err)
 		return nil, nil, err

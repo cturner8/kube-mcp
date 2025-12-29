@@ -23,7 +23,7 @@ type GetPodToolParams struct {
 func GetPodHandler(ctx context.Context, req *mcp.CallToolRequest, params GetPodToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	pod, err := kubernetesApiClient.CoreV1().Pods(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	pod, err := getKubernetesApiClient().CoreV1().Pods(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		slog.Error("Failed to get pod from Kubernetes API", "tool", req.Params.Name, "pod", params.Name, "namespace", params.Namespace, "error", err)
 		return nil, nil, err

@@ -27,7 +27,7 @@ func ListPodsHandler(ctx context.Context, req *mcp.CallToolRequest, params ListP
 		namespace = *params.Namespace
 	}
 
-	pods, err := kubernetesApiClient.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
+	pods, err := getKubernetesApiClient().CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		slog.Error("failed to list pods from Kubernetes API", "tool", req.Params.Name, "namespace", namespace, "error", err)
 		return nil, nil, err

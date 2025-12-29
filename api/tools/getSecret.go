@@ -23,7 +23,7 @@ type GetSecretToolParams struct {
 func GetSecretHandler(ctx context.Context, req *mcp.CallToolRequest, params GetSecretToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	secret, err := kubernetesApiClient.CoreV1().Secrets(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	secret, err := getKubernetesApiClient().CoreV1().Secrets(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

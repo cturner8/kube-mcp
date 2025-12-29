@@ -27,7 +27,7 @@ func ListServicesHandler(ctx context.Context, req *mcp.CallToolRequest, params L
 		namespace = *params.Namespace
 	}
 
-	services, err := kubernetesApiClient.CoreV1().Services(namespace).List(ctx, metav1.ListOptions{})
+	services, err := getKubernetesApiClient().CoreV1().Services(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

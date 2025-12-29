@@ -27,7 +27,7 @@ func ListConfigMapsHandler(ctx context.Context, req *mcp.CallToolRequest, params
 		namespace = *params.Namespace
 	}
 
-	configMaps, err := kubernetesApiClient.CoreV1().ConfigMaps(namespace).List(ctx, metav1.ListOptions{})
+	configMaps, err := getKubernetesApiClient().CoreV1().ConfigMaps(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

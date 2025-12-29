@@ -27,7 +27,7 @@ func ListSecretsHandler(ctx context.Context, req *mcp.CallToolRequest, params Li
 		namespace = *params.Namespace
 	}
 
-	secrets, err := kubernetesApiClient.CoreV1().Secrets(namespace).List(ctx, metav1.ListOptions{})
+	secrets, err := getKubernetesApiClient().CoreV1().Secrets(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

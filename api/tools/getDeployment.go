@@ -23,7 +23,7 @@ type GetDeploymentToolParams struct {
 func GetDeploymentHandler(ctx context.Context, req *mcp.CallToolRequest, params GetDeploymentToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	deployment, err := kubernetesApiClient.AppsV1().Deployments(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	deployment, err := getKubernetesApiClient().AppsV1().Deployments(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

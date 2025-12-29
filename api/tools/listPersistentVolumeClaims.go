@@ -27,7 +27,7 @@ func ListPersistentVolumeClaimsHandler(ctx context.Context, req *mcp.CallToolReq
 		namespace = *params.Namespace
 	}
 
-	pvcs, err := kubernetesApiClient.CoreV1().PersistentVolumeClaims(namespace).List(ctx, metav1.ListOptions{})
+	pvcs, err := getKubernetesApiClient().CoreV1().PersistentVolumeClaims(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

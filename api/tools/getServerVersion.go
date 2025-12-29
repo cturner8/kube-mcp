@@ -12,7 +12,7 @@ var GetServerVersionTool = &mcp.Tool{
 }
 
 func GetServerVersionHandler(ctx context.Context, req *mcp.CallToolRequest, params any) (*mcp.CallToolResult, any, error) {
-	version, err := kubernetesApiClient.Discovery().ServerVersion()
+	version, err := getKubernetesApiClient().Discovery().ServerVersion()
 	if err != nil {
 		return nil, nil, err
 	}

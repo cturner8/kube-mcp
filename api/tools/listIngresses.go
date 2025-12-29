@@ -27,7 +27,7 @@ func ListIngressesHandler(ctx context.Context, req *mcp.CallToolRequest, params 
 		namespace = *params.Namespace
 	}
 
-	ingresses, err := kubernetesApiClient.NetworkingV1().Ingresses(namespace).List(ctx, metav1.ListOptions{})
+	ingresses, err := getKubernetesApiClient().NetworkingV1().Ingresses(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

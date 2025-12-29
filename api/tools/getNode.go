@@ -22,7 +22,7 @@ type GetNodeToolParams struct {
 func GetNodeHandler(ctx context.Context, req *mcp.CallToolRequest, params GetNodeToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	node, err := kubernetesApiClient.CoreV1().Nodes().Get(ctx, params.Name, metav1.GetOptions{})
+	node, err := getKubernetesApiClient().CoreV1().Nodes().Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

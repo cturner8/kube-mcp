@@ -23,7 +23,7 @@ type GetServiceToolParams struct {
 func GetServiceHandler(ctx context.Context, req *mcp.CallToolRequest, params GetServiceToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	service, err := kubernetesApiClient.CoreV1().Services(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	service, err := getKubernetesApiClient().CoreV1().Services(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

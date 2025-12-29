@@ -23,7 +23,7 @@ type GetIngressToolParams struct {
 func GetIngressHandler(ctx context.Context, req *mcp.CallToolRequest, params GetIngressToolParams) (*mcp.CallToolResult, any, error) {
 	slog.Debug("Tool invoked", "tool", req.Params.Name)
 
-	ingress, err := kubernetesApiClient.NetworkingV1().Ingresses(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
+	ingress, err := getKubernetesApiClient().NetworkingV1().Ingresses(params.Namespace).Get(ctx, params.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, err
 	}

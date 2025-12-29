@@ -27,7 +27,7 @@ func ListDeploymentsHandler(ctx context.Context, req *mcp.CallToolRequest, param
 		namespace = *params.Namespace
 	}
 
-	deployments, err := kubernetesApiClient.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
+	deployments, err := getKubernetesApiClient().AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, err
 	}
