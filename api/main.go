@@ -11,9 +11,12 @@ import (
 )
 
 func main() {
-	initLogger()
+	config.Load()
+	cfg := config.GetMcpServerConfig()
 
-	kubernetesApiClient := kubernetes.CreateKubernetesApiClient(*config.ServerConfig.OutOfCluster, *config.ServerConfig.Kubeconfig)
+	initLogger(cfg.LogLevel)
+
+	kubernetesApiClient := kubernetes.CreateKubernetesApiClient(*cfg.OutOfCluster, *cfg.Kubeconfig)
 
 	version, err := kubernetesApiClient.Discovery().ServerVersion()
 	if err != nil {
@@ -26,9 +29,9 @@ func main() {
 	server.StartServer()
 }
 
-func initLogger() {
+func initLogger(logLevel string) {
 	level := slog.LevelInfo
-	switch strings.ToLower(config.ServerConfig.LogLevel) {
+	switch strings.ToLower(logLevel) {
 	case "debug":
 		level = slog.LevelDebug
 	case "info":
