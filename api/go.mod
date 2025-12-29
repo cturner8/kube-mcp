@@ -3,7 +3,7 @@ module github.com/cturner8/kube-mcp
 go 1.25.3
 
 require (
-	github.com/auth0/go-jwt-middleware/v2 v2.3.0
+	github.com/auth0/go-jwt-middleware/v2 v2.3.1
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	k8s.io/apimachinery v0.34.1
 	k8s.io/client-go v0.34.1
