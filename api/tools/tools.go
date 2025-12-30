@@ -10,19 +10,40 @@ import (
 	k8s "k8s.io/client-go/kubernetes"
 )
 
-var (
-	kubeClientOnce      sync.Once
-	kubernetesApiClient *k8s.Clientset
-)
+// ClientProvider is an interface for providing access to the Kubernetes API client.
+// This allows for dependency injection and makes the tools testable.
+type ClientProvider interface {
+	GetClient() *k8s.Clientset
+}
 
-func getKubernetesApiClient() *k8s.Clientset {
-	kubeClientOnce.Do(func() {
+// defaultClientProvider is the production implementation that uses singleton pattern.
+type defaultClientProvider struct {
+	once   sync.Once
+	client *k8s.Clientset
+}
+
+func (p *defaultClientProvider) GetClient() *k8s.Clientset {
+	p.once.Do(func() {
 		config.Load()
 		cfg := config.GetMcpServerConfig()
-		kubernetesApiClient = kubernetes.CreateKubernetesApiClient(*cfg.OutOfCluster, *cfg.Kubeconfig)
+		p.client = kubernetes.CreateKubernetesApiClient(*cfg.OutOfCluster, *cfg.Kubeconfig)
 	})
+	return p.client
+}
 
-	return kubernetesApiClient
+var (
+	clientProvider ClientProvider = &defaultClientProvider{}
+)
+
+// SetClientProvider sets the client provider for dependency injection.
+// This is primarily used for testing to inject mock clients.
+func SetClientProvider(provider ClientProvider) {
+	clientProvider = provider
+}
+
+// getKubernetesApiClient returns the Kubernetes API client from the configured provider.
+func getKubernetesApiClient() *k8s.Clientset {
+	return clientProvider.GetClient()
 }
 
 func IsToolAllowed(toolName string) bool {
