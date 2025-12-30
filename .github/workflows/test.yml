@@ -22,10 +22,10 @@ jobs:
         cache: true
         cache-dependency-path: "api/go.sum"
 
-    - name: Build API
-      working-directory: api
-      run: go build -v ./...
-
     - name: Run Tests
       working-directory: api
-      run: go test -v ./...
+      run: go test -v -tags=test ./...
+
+    - name: Verify Build
+      working-directory: api
+      run: go build -v ./...
