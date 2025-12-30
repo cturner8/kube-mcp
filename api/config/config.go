@@ -75,8 +75,6 @@ var (
 	ServerConfig McpServerConfig
 )
 
-// Load parses flags/environment once and populates ServerConfig.
-// Safe for concurrent callers.
 func Load() {
 	loadOnce.Do(func() {
 		ServerConfig = buildMcpServerConfig()

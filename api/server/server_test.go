@@ -7,13 +7,25 @@ package server
 import (
 	"testing"
 
+	"github.com/cturner8/kube-mcp/config"
+	"github.com/cturner8/kube-mcp/tools"
 	"github.com/stretchr/testify/assert"
 )
+
+func resetTestState(t *testing.T) {
+	t.Helper()
+	config.Reset()
+	tools.Reset()
+}
 
 func TestBuildServerDefault(t *testing.T) {
 	t.Setenv("KUBE_MCP_BASE_URL", "http://localhost:9000")
 	t.Setenv("KUBE_MCP_OIDC_ISSUER_URL", "https://auth.localhost:8443")
 	t.Setenv("KUBE_MCP_OIDC_CLIENT_ID", "00000000-0000-0000-0000-000000000000")
+	t.Setenv("KUBE_MCP_ALLOWED_TOOLS", "")
+	t.Setenv("KUBE_MCP_DISALLOWED_TOOLS", "")
+
+	resetTestState(t)
 
 	_, activeTools := buildServer()
 
@@ -26,10 +38,13 @@ func TestBuildServerAllowedTools(t *testing.T) {
 	t.Setenv("KUBE_MCP_OIDC_ISSUER_URL", "https://auth.localhost:8443")
 	t.Setenv("KUBE_MCP_OIDC_CLIENT_ID", "00000000-0000-0000-0000-000000000000")
 	t.Setenv("KUBE_MCP_ALLOWED_TOOLS", "get_server_version")
+	t.Setenv("KUBE_MCP_DISALLOWED_TOOLS", "")
+
+	resetTestState(t)
 
 	_, activeTools := buildServer()
 
-	assert.Greater(t, len(activeTools), 1)
+	assert.Equal(t, 1, len(activeTools))
 	assert.Contains(t, activeTools, "get_server_version")
 	assert.NotContains(t, activeTools, "list_nodes")
 }
@@ -38,7 +53,10 @@ func TestBuildServerDisallowedTools(t *testing.T) {
 	t.Setenv("KUBE_MCP_BASE_URL", "http://localhost:9000")
 	t.Setenv("KUBE_MCP_OIDC_ISSUER_URL", "https://auth.localhost:8443")
 	t.Setenv("KUBE_MCP_OIDC_CLIENT_ID", "00000000-0000-0000-0000-000000000000")
+	t.Setenv("KUBE_MCP_ALLOWED_TOOLS", "")
 	t.Setenv("KUBE_MCP_DISALLOWED_TOOLS", "get_server_version")
+
+	resetTestState(t)
 
 	_, activeTools := buildServer()
 
