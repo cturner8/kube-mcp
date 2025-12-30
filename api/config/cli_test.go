@@ -9,8 +9,6 @@ import (
 )
 
 func TestGetMcpServerCliFlagsEmpty(t *testing.T) {
-	t.Skip("fix flag definition")
-
 	home := homedir.HomeDir()
 	config := getMcpServerCliFlags()
 
