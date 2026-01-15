@@ -8,8 +8,7 @@
 
 ################################################################################
 # Create a stage for building the application.
-ARG GO_VERSION=1.25
-FROM --platform=${BUILDPLATFORM} public.ecr.aws/docker/library/golang:${GO_VERSION} AS build
+FROM --platform=${BUILDPLATFORM} public.ecr.aws/docker/library/golang:1.25 AS build
 WORKDIR /src
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
@@ -18,6 +17,7 @@ WORKDIR /src
 # the container.
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,source=go.mod,target=go.mod \
+    --mount=type=bind,source=go.sum,target=go.sum \
     go mod download -x
 
 # This is the architecture you're building for, which is passed in by the builder.
@@ -37,8 +37,10 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 # runtime dependencies for the application. This often uses a different base
 # image from the build stage where the necessary files are copied from the build
 # stage.
-ARG ALPINE_VERSION=3.22
-FROM --platform=${BUILDPLATFORM} public.ecr.aws/docker/library/alpine:latest AS final
+FROM --platform=${TARGETPLATFORM} public.ecr.aws/docker/library/alpine:3.22 AS final
+
+LABEL org.opencontainers.image.source https://github.com/cturner8/kube-mcp
+LABEL org.opencontainers.image.description Kubernetes API MCP Server
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/

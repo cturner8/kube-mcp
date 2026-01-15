@@ -8,10 +8,14 @@ on:
   workflow_dispatch: {}
   push:
     tags:
-      - 'chart-v*'
+      - "chart-v*"
+
+concurrency:
+  group: helm-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -37,7 +41,7 @@ jobs:
         run: helm package charts/kube-mcp
 
       - name: Push helm chart
-        id: push 
+        id: push
         run: helm push kube-mcp-*.tgz oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Publish the release
