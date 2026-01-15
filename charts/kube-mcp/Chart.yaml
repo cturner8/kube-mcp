@@ -2,6 +2,6 @@ apiVersion: v2
 name: kube-mcp-chart
 description: A Helm chart for kube-mcp
 type: application
-version: 0.0.0
+version: 0.0.1
 # renovate: image=ghcr.io/cturner8/kube-mcp
-appVersion: "0.0.0"
+appVersion: "0.0.1"

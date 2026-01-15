@@ -37,10 +37,10 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 # runtime dependencies for the application. This often uses a different base
 # image from the build stage where the necessary files are copied from the build
 # stage.
-FROM --platform=${TARGETPLATFORM} public.ecr.aws/docker/library/alpine:3.23 AS final
+FROM public.ecr.aws/docker/library/alpine:3.23 AS final
 
-LABEL org.opencontainers.image.source https://github.com/cturner8/kube-mcp
-LABEL org.opencontainers.image.description Kubernetes API MCP Server
+LABEL org.opencontainers.image.source="https://github.com/cturner8/kube-mcp"
+LABEL org.opencontainers.image.description="Kubernetes API MCP Server"
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
