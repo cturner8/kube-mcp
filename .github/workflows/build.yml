@@ -19,6 +19,9 @@ jobs:
       id-token: write
       attestations: write
       artifact-metadata: write
+    concurrency:
+      group: build-${{ github.ref }}
+      cancel-in-progress: false
 
     steps:
       - name: Checkout repository
