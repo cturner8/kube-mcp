@@ -37,7 +37,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 # runtime dependencies for the application. This often uses a different base
 # image from the build stage where the necessary files are copied from the build
 # stage.
-FROM --platform=${TARGETPLATFORM} public.ecr.aws/docker/library/alpine:3.22 AS final
+FROM --platform=${TARGETPLATFORM} public.ecr.aws/docker/library/alpine:3.23 AS final
 
 LABEL org.opencontainers.image.source https://github.com/cturner8/kube-mcp
 LABEL org.opencontainers.image.description Kubernetes API MCP Server
