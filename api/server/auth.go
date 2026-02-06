@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/auth0/go-jwt-middleware/v2/jwks"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/auth0/go-jwt-middleware/v3/jwks"
+	"github.com/auth0/go-jwt-middleware/v3/validator"
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 
@@ -40,7 +40,7 @@ func (c *JWTClaims) Validate(ctx context.Context) error {
 	return nil
 }
 
-func getCustomClaims() validator.CustomClaims {
+func getCustomClaims() *JWTClaims {
 	return &JWTClaims{}
 }
 
@@ -75,14 +75,23 @@ func getProtectedResourceMetadata() *oauthex.ProtectedResourceMetadata {
 }
 
 func createBearerAuth(baseUrl string, prmPath string) func(http.Handler) http.Handler {
-	jwksProvider := jwks.NewCachingProvider(&config.ServerConfig.OidcIssuerURL, time.Minute*5) // Cache JWKS for 5 minutes
+	// Create JWKS provider with v3 options pattern
+	jwksProvider, err := jwks.NewCachingProvider(
+		jwks.WithIssuerURL(&config.ServerConfig.OidcIssuerURL),
+		jwks.WithCacheTTL(time.Minute*5), // Cache JWKS for 5 minutes
+	)
+	if err != nil {
+		slog.Error("Error setting up JWKS provider", "error", err)
+		os.Exit(1)
+	}
+
 	signingValidator := getSigningValidator()
-	// Set up the validator using the chosen algorithm
+	// Set up the validator using v3 options pattern
 	jwtValidator, err := validator.New(
-		jwksProvider.KeyFunc,
-		signingValidator,
-		config.ServerConfig.OidcIssuerURL.String(),
-		[]string{config.ServerConfig.OidcClientID},
+		validator.WithKeyFunc(jwksProvider.KeyFunc),
+		validator.WithAlgorithm(signingValidator),
+		validator.WithIssuer(config.ServerConfig.OidcIssuerURL.String()),
+		validator.WithAudience(config.ServerConfig.OidcClientID),
 		validator.WithCustomClaims(getCustomClaims),
 		validator.WithAllowedClockSkew(30*time.Second),
 	)
