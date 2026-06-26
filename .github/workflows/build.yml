@@ -75,7 +75,7 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
       - name: Generate image attestation
-        uses: actions/attest-build-provenance@v4.1.0
+        uses: actions/attest-build-provenance@v4.1.1
         env:
           SUBJECT: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         with:
