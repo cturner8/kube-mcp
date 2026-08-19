@@ -8,7 +8,7 @@
 
 ################################################################################
 # Create a stage for building the application.
-FROM --platform=${BUILDPLATFORM} public.ecr.aws/docker/library/golang:1.26 AS build
+FROM --platform=${BUILDPLATFORM} public.ecr.aws/docker/library/golang:1.27 AS build
 WORKDIR /src
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
