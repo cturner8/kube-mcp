@@ -6,7 +6,7 @@ require (
 	github.com/auth0/go-jwt-middleware/v3 v3.3.0
 	github.com/modelcontextprotocol/go-sdk v1.7.0
 	k8s.io/apimachinery v0.36.3
-	k8s.io/client-go v0.36.3
+	k8s.io/client-go v1.5.2
 )
 
 require (
