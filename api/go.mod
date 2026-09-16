@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/auth0/go-jwt-middleware/v3 v3.3.0
-	github.com/modelcontextprotocol/go-sdk v1.7.0
+	github.com/modelcontextprotocol/go-sdk v1.8.0
 	k8s.io/apimachinery v0.37.0
 	k8s.io/client-go v0.37.0
 )
