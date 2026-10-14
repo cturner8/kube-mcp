@@ -8,6 +8,8 @@ github.com/auth0/go-jwt-middleware/v3 v3.2.0 h1:OP0/YH89A+w03zOjuRPPgKh5S+1+uAmY
 github.com/auth0/go-jwt-middleware/v3 v3.2.0/go.mod h1:/f0hy3exUWxL7/4XJ1oSHBDSBf2Os2C1VT2RkQ9frs0=
 github.com/auth0/go-jwt-middleware/v3 v3.3.0 h1:nRALRLGsUdWgxX0knqwp60YxiYypeZYfhr+yFCvHoGY=
 github.com/auth0/go-jwt-middleware/v3 v3.3.0/go.mod h1:WXL/zFf3nuQJWQOVj3hGUQ289ixKVSrFGwZn6LxaQsw=
+github.com/auth0/go-jwt-middleware/v3 v3.4.0 h1:hdF7tN8X6hXMlRkUVUC9Gf4FI2eM9SGO5hfeAWDeQA0=
+github.com/auth0/go-jwt-middleware/v3 v3.4.0/go.mod h1:pZRxro4VRQywl7EDrbOYu2eonP6EtJ2ez4vYmW4F0hg=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -179,6 +181,8 @@ go.yaml.in/yaml/v2 v2.4.4 h1:tuyd0P+2Ont/d6e2rl3be67goVK4R6deVxCUX5vyPaQ=
 go.yaml.in/yaml/v2 v2.4.4/go.mod h1:gMZqIpDtDqOfM0uNfy0SkpRhvUryYH0Z6wdMYcacYXQ=
 go.yaml.in/yaml/v3 v3.0.4 h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
+go.yaml.in/yaml/v3 v3.0.5 h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=
+go.yaml.in/yaml/v3 v3.0.5/go.mod h1:HVTZu1O7/Vkt2N+BFy8Zza+lnLsABggaTM2ZpNIGuKg=
 golang.org/x/crypto v0.46.0 h1:cKRW/pmt1pKAfetfu+RCEvjvZkA9RimPbh7bhFjGVBU=
 golang.org/x/crypto v0.46.0/go.mod h1:Evb/oLKmMraqjZ2iQTwDwvCtJkczlDuTmdJXoZVzqU0=
 golang.org/x/crypto v0.47.0 h1:V6e3FRj+n4dbpw86FJ8Fv7XVOql7TEwpHapKoMJ/GO8=
