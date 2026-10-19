@@ -3,7 +3,7 @@ module github.com/cturner8/kube-mcp
 go 1.26.0
 
 require (
-	github.com/auth0/go-jwt-middleware/v3 v3.3.0
+	github.com/auth0/go-jwt-middleware/v3 v3.4.0
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	k8s.io/apimachinery v0.37.1
 	k8s.io/client-go v0.37.1
@@ -53,7 +53,7 @@ require (
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
